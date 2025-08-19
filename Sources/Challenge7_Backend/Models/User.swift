@@ -63,6 +63,8 @@ final class User: Model, @unchecked Sendable{
         self.path = path
     }
     
+    /// Converts an user to UserDto
+    /// - Returns: UserDto object
     func toDTO() -> UserDTO{
         .init(id: id,
               name: self.$name.value,

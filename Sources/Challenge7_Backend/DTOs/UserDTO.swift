@@ -8,7 +8,9 @@
 import Vapor
 import Fluent
 
+/// A DTO is a type that represents what a client should send or receive.
 struct UserDTO: Content{
+    ///User Atributes
     var id: UUID?
     var name: String?
     var email: String?

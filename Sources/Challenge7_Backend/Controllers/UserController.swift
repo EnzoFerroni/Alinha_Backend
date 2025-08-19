@@ -1,0 +1,83 @@
+//
+//  File.swift
+//  Challenge7_Backend
+//
+//  Created by João Vitor Rocha Miranda on 19/08/25.
+//
+
+import Vapor
+
+struct UserController: RouteCollection{
+    
+    /// initializes all gates
+    /// - Parameter routes: builds routes
+    func boot(routes: any RoutesBuilder) throws{
+        let users = routes.grouped("users")
+        users.get(use: index)
+        users.get(use: create)
+        
+        users.group(":id"){user in
+            user.get(use: show)
+            user.put(use: update)
+            user.delete(use: delete)
+            
+        }
+    }
+    
+    /// Fetches all users in data base
+    /// - Parameter req: HTTP Request
+    /// - Returns: A list of usersDTO
+    func index(req: Request) async throws -> [UserDTO] {
+        try await User.query(on: req.db).all().map { $0.toDTO() }
+    }
+    
+    /// Creates a new user in data base
+    /// - Parameter req: HTTP Request
+    /// - Returns: userDTO
+    func create(req: Request) async throws -> UserDTO {
+        let user = try req.content.decode(User.self)
+        try await user.save(on: req.db)
+        return user.toDTO()
+    }
+    
+    /// Requets all users
+    /// - Parameter req: HTTP Request
+    /// - Returns: UserDTO
+    func show(req: Request) async throws -> UserDTO {
+        guard let user = try await User.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        return user.toDTO()
+    }
+    
+    /// Creates user updating gate
+    /// - Parameter req: HTTP Request
+    /// - Returns: userDTO
+    func update(req: Request) async throws -> UserDTO {
+        guard let user = try await User.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        
+        let updatedUser = try req.content.decode(User.self)
+        
+        user.name = updatedUser.name
+        user.email = updatedUser.email
+        user.password = updatedUser.password
+        user.path = updatedUser.path
+        user.role = updatedUser.role
+        
+        try await user.save(on: req.db)
+        return user.toDTO()
+    }
+    
+    /// Deletes an user object
+    /// - Parameter req: HTTP Request
+    /// - Returns: HTTP code
+    func delete(req: Request) async throws -> HTTPStatus {
+        guard let user = try await User.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        try await user.delete(on: req.db)
+        return .ok
+    }
+}
