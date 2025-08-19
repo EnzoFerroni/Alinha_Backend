@@ -63,4 +63,13 @@ final class User: Model, @unchecked Sendable{
         self.path = path
     }
     
+    func toDTO() -> UserDTO{
+        .init(id: id,
+              name: self.$name.value,
+              email: self.$email.value,
+              password: self.$password.value,
+              role: self.$role.value,
+              path: self.$path.value)
+    }
+    
 }
