@@ -35,7 +35,8 @@ struct UserMigration: AsyncMigration {
             .field("password", .string, .required)
             .field("role", userRole, .required)
             .field("path", pathType, .required)
-            .unique(on: "email")
+            .field("organization_id", .uuid, .references("Organization", "id"))
+            .unique(on: "email", "organization_id")
             .create()
     }
     
