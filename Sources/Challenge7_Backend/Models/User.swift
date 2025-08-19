@@ -35,6 +35,10 @@ final class User: Model, @unchecked Sendable{
     @ID(key: .id)
     var id: UUID?
     
+    ///Parent relation to organization
+    @OptionalParent(key: "user_id")
+    var user: User?
+    
     /*User Atributes*/
     @Field(key: "name")
     var name: String
