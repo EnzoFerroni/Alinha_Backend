@@ -9,17 +9,17 @@ import Fluent
 import Vapor
 import Foundation
 
-final class Appointment: Model, Content, @unchecked Sendable {
+final class Appointment: Model, @unchecked Sendable {
     static let schema = "appointments"
     
     @ID(key: .id)
     var id: UUID?
     
     @Field(key: "mentor")
-    var mentor: String
+    var mentor: User.id
     
     @Field(key: "student")
-    var student: String
+    var student: User.id
     
     @Field(key: "appointmentPlace")
     var appointmentPlace: String
@@ -42,7 +42,7 @@ final class Appointment: Model, Content, @unchecked Sendable {
     
     init() { }
     
-    init(id: UUID? = nil, mentor: String, student: String, appointmentPlace: String, appointmentCategory: UserPath, appointmentType: AppointmentType, isScheduled: Bool, callStudent: Bool, isDone: Bool) {
+    init(id: UUID? = nil, mentor: User.id, student: User.id, appointmentPlace: String, appointmentCategory: UserPath, appointmentType: AppointmentType, isScheduled: Bool, callStudent: Bool, isDone: Bool) {
         self.id = id
         self.mentor = mentor
         self.student = student
@@ -67,4 +67,6 @@ final class Appointment: Model, Content, @unchecked Sendable {
             isDone: self.$isDone.value
         )
     }
+    
+    
 }

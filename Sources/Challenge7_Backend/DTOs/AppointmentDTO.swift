@@ -10,8 +10,8 @@ import Vapor
 
 struct AppointmentDTO: Content {
     var id: UUID?
-    var mentor: String?
-    var student: String?
+    var mentor: User.id?
+    var student: User.id?
     var appointmentPlace: UserPath?
     var appointmentCategory: AppointmentType?
     var isScheduled: Bool?
