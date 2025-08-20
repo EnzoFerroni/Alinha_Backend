@@ -12,7 +12,7 @@ struct UserMigration: AsyncMigration {
     ///  Make a change to the database.
     /// - Parameter database: where the data is stored
     func prepare(on database: any Database) async throws {
-        try await database.enum("UserRole")
+        try await database.enum("user_role")
             .case("student")
             .case("mentor")
             .case("adm")
@@ -35,7 +35,7 @@ struct UserMigration: AsyncMigration {
             .field("password", .string, .required)
             .field("role", userRole, .required)
             .field("path", pathType, .required)
-            .field("organization_id", .uuid, .references("Organization", "id"))
+            .field("organization_id", .uuid, .references("TB_organizations", "id"))
             .unique(on: "email", "organization_id")
             .create()
     }
@@ -43,6 +43,6 @@ struct UserMigration: AsyncMigration {
     /// Undo the change made in `prepare`, if possible.
     /// - Parameter database: where the data is stored
     func revert(on database: any Database) async throws {
-        try await database.schema("users").delete()
+        try await database.schema("TB_users").delete()
     }
 }

@@ -9,11 +9,13 @@ import Fluent
 
 struct CreateAppointment: AsyncMigration {
     func prepare(on database: any Database) async throws {
-        try await database.enum("AppointmentType")
+        try await database.enum("appointment_type")
             .case("Dúvida")
             .case("Problema")
             .create()
         let appointmentType = try await database.enum("appointment_type").read()
+        
+        let userPath = try await database.enum("user_path").read()
         
         try await database.schema("TB_appointments")
             .id()

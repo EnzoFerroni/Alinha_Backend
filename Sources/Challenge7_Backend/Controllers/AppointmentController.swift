@@ -58,6 +58,7 @@ struct AppointmentController: RouteCollection {
         guard let appointment = try await Appointment.find(create.id, on: req.db) else {
             throw Abort(.notFound)
         }
+        
         appointment.appointmentPlace = create.appointmentPlace
         try await appointment.update(on: req.db)
         return create

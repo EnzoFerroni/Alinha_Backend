@@ -25,7 +25,7 @@ struct OrganizationMigration: AsyncMigration {
             .create()
     }
         func revert(on database: any Database) async throws {
-            try await database.schema("organizations").delete()
+            try await database.schema("TB_organizations").delete()
         }
 
 }

@@ -10,10 +10,11 @@ import Vapor
 
 struct AppointmentDTO: Content {
     var id: UUID?
-    var mentor: User.id?
-    var student: User.id?
-    var appointmentPlace: UserPath?
-    var appointmentCategory: AppointmentType?
+    var mentor: User?
+    var student: User?
+    var appointmentPlace: String?
+    var appointmentCategory: UserPath?
+    var appointmentType: AppointmentType?
     var isScheduled: Bool?
     var callStudent: Bool?
     var isDone: Bool?
@@ -39,6 +40,10 @@ struct AppointmentDTO: Content {
             model.appointmentCategory = appointmentCategory
         }
         
+        if let appointmentType = self.appointmentType {
+            model.appointmentType = appointmentType
+        }
+        
         if let isScheduled = self.isScheduled {
             model.isScheduled = isScheduled
         }
@@ -54,17 +59,19 @@ struct AppointmentDTO: Content {
         if let createdAt = self.createdAt {
             model.createdAt = createdAt
         }
+        
+        return model
     }
 }
 
 extension AppointmentDTO {
     struct UpdateMentor : Content {
         var id: UUID
-        var mentor: User.id
+        var mentor: User
     }
     struct UpdatePlace: Content {
         var id: UUID
-        var appointmentPlace: UserPath
+        var appointmentPlace: String
     }
     
     struct UpdateScheduled : Content {

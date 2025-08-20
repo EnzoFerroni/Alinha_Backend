@@ -50,7 +50,6 @@ struct OrganizationsController: RouteCollection {
         guard let organization = try await Organization.find(create.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        let updatedOrganization = try req.content.decode(Organization.self)
         organization.name = create.name
         try await organization.update(on: req.db)
         return create

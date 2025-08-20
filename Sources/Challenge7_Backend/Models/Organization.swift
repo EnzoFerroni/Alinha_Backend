@@ -14,7 +14,7 @@ final class Organization: Model, @unchecked Sendable {
     @Children(for: \.$organization)
     var users: [User]
 
-    static let schema = "organizations"
+    static let schema = "TB_organizations"
     
     @ID(key: .id)
     var id: UUID?
@@ -62,7 +62,7 @@ final class Organization: Model, @unchecked Sendable {
             mentors: self.$mentors.value,
             availableMentors: self.$availableMentors.value,
             queue: self.$queue.value,
-            unscheduleQueue: self.$unscheduleQueue.value,
+            unscheduleQueue: self.$unscheduleQueue.value
         )
     }
 }

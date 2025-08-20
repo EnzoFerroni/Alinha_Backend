@@ -14,7 +14,7 @@ struct UserController: RouteCollection{
     func boot(routes: any RoutesBuilder) throws{
         let users = routes.grouped("users")
         users.get(use: index)
-        users.get(use: create)
+        users.post(use: create)
         
         users.group(":id"){user in
             user.get(use: show)
@@ -37,7 +37,7 @@ struct UserController: RouteCollection{
     @Sendable
     func create(req: Request) async throws -> User.Public {
         try UserDTO.Create.validate(content: req)
-        var create = try req.content.decode(UserDTO.Create.self)
+        let create = try req.content.decode(UserDTO.Create.self)
         guard create.password == create.confirmedPassword else{
             throw Abort(.badRequest, reason: "Wrong Password!")
         }
