@@ -45,7 +45,7 @@ struct AppointmentController: RouteCollection {
     
     func updateMentor(req: Request) async throws -> AppointmentDTO.UpdateMentor {
         let create = try req.content.decode(AppointmentDTO.UpdateMentor.self)
-        guard let appointment = try await Appointment.find(req.parameters.require("id"), on: req.db) else {
+        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.mentor = create.mentor

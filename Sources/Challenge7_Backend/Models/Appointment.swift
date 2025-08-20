@@ -10,7 +10,7 @@ import Vapor
 import Foundation
 
 final class Appointment: Model, @unchecked Sendable {
-    static let schema = "appointments"
+    static let schema = "TB_appointments"
     
     @ID(key: .id)
     var id: UUID?
@@ -39,8 +39,8 @@ final class Appointment: Model, @unchecked Sendable {
     @Boolean(key: "isDone")
     var isDone: Bool
     
-    @Field(key: "createdAt")
-    var createdAt: Date
+    @Timestamp(key: "createdAt", on: .create)
+    var createdAt: Date?
     
     
     init() { }
