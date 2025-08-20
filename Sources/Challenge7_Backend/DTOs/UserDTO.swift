@@ -47,3 +47,23 @@ struct UserDTO: Content{
     }
     
 }
+
+extension UserDTO{
+    struct Create: Content{
+        var name: String
+        var email: String
+        var password: String
+        var confirmedPassword: String
+        var role: UserRole
+        var path: UserPath
+    }
+}
+
+///All Authenticatable atributes
+extension UserDTO.Create: Validatable{
+    static func validations(_ validations: inout Validations) {
+        validations.add("name", as: String.self, is: !.empty)
+        validations.add("email", as: String.self, is: .email)
+        validations.add("password", as: String.self, is: .count(8...))
+    }
+}

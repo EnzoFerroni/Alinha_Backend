@@ -34,10 +34,25 @@ struct UserController: RouteCollection{
     /// Creates a new user in data base
     /// - Parameter req: HTTP Request
     /// - Returns: userDTO
-    func create(req: Request) async throws -> UserDTO {
-        let user = try req.content.decode(User.self)
+    @Sendable
+    func create(req: Request) async throws -> User.Public {
+        try UserDTO.Create.validate(content: req)
+        var create = try req.content.decode(UserDTO.Create.self)
+        guard create.password == create.confirmedPassword else{
+            throw Abort(.badRequest, reason: "Wrong Password!")
+        }
+        
+        let user = try User(
+                name: create.name,
+                email: create.email,
+                password: Bcrypt.hash(create.password),
+                role: create.role,
+                path: create.path
+            )
+        
         try await user.save(on: req.db)
-        return user.toDTO()
+        return user.convertToPublic()
+        
     }
     
     /// Requets all users
@@ -80,4 +95,6 @@ struct UserController: RouteCollection{
         try await user.delete(on: req.db)
         return .ok
     }
+    
+    
 }

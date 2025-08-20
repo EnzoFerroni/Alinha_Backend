@@ -27,7 +27,7 @@ enum UserPath: String, Codable {
 
 //MARK: - User Model
 
-final class User: Model, @unchecked Sendable{
+final class User: Model, @unchecked Sendable, Content{
     
     static let schema = "TB_users"
     
@@ -78,4 +78,35 @@ final class User: Model, @unchecked Sendable{
               path: self.$path.value)
     }
     
+    /// What the frontEnd can "see"
+    final class Public: Content, @unchecked Sendable{
+        var id: UUID?
+        var email: String
+        
+        init(id: UUID?, email: String) {
+            self.id = id
+            self.email = email
+        }
+    }
+
+}
+
+//MARK: - Authentication
+
+extension User: ModelAuthenticatable {
+    static var usernameKey: KeyPath<User, Field<String>>{
+        \User.$email
+    }
+    
+    static var passwordHashKey: KeyPath<User, Field<String>>{
+        \User.$password
+    }
+    
+    func verify(password: String) throws -> Bool {
+        try Bcrypt.verify(password, created: self.password)
+    }
+    
+    func convertToPublic()-> User.Public{
+        return User.Public(id: id, email: email)
+    }
 }
