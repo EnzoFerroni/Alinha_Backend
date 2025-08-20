@@ -13,29 +13,29 @@ struct AppointmentController: RouteCollection {
         let appointments = routes.grouped("appointments")
         appointments.get(use: index)
         appointments.post(use: create)
-
+        
         appointments.group(":id") { appointment in
             appointment.get(use: show)
             appointment.delete(use: delete)
             appointment.patch("mentor", use: updateMentor)
             appointment.patch("place", use: updatePlace)
-            appointment.patch("isScheduled", use: updateIsScheduled)
+            appointment.patch("isScheduled", use: updateScheduled)
             appointment.patch("callStudent", use: updateCallStudent)
             appointment.patch("isDone", use: updateIsDone)
         }
     }
-
+    
     func index(req: Request) async throws -> [AppointmentDTO] {
         try await Appointment.query(on: req.db).all().map { $0.toDTO() }
     }
-
+    
     func create(req: Request) async throws -> AppointmentDTO {
         let appointment = try req.content.decode(AppointmentDTO.self)
         let appointmentModel = appointment.toModel()
         try await appointmentModel.save(on: req.db)
         return appointment
     }
-
+    
     func show(req: Request) async throws -> AppointmentDTO {
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
@@ -43,56 +43,56 @@ struct AppointmentController: RouteCollection {
         return appointment.toDTO()
     }
     
-    func updateMentor(req: Request) async throws -> AppointmentDTO {
+    func updateMentor(req: Request) async throws -> AppointmentDTO.UpdateMentor {
+        let create = try req.content.decode(AppointmentDTO.UpdateMentor.self)
         guard let appointment = try await Appointment.find(req.parameters.require("id"), on: req.db) else {
             throw Abort(.notFound)
         }
-        let mentor = try req.content.get(UUID.self, at: "mentor")
-        appointment.mentor = mentor
-        try await appointment.save(on: req.db)
-        return appointment.toDTO()
+        appointment.mentor = create.mentor
+        try await appointment.update(on: req.db)
+        return create
     }
-
-    func updatePlace(req: Request) async throws -> AppointmentDTO {
-        guard let appointment = try await Appointment.find(req.parameters.require("id"), on: req.db) else {
+    
+    func updatePlace(req: Request) async throws -> AppointmentDTO.UpdatePlace {
+        let create = try req.content.decode(AppointmentDTO.UpdatePlace.self)
+        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        let appointmentPlace = try req.content.get(String.self, at: "appointmentPlace")
-        appointment.appointmentPlace = appointmentPlace
-        try await appointment.save(on: req.db)
-        return appointment.toDTO()
+        appointment.appointmentPlace = create.appointmentPlace
+        try await appointment.update(on: req.db)
+        return create
     }
-
-    func updateIsScheduled(req: Request) async throws -> AppointmentDTO {
-        guard let appointment = try await Appointment.find(req.parameters.require("id"), on: req.db) else {
+    
+    func updateScheduled(req: Request) async throws -> AppointmentDTO.UpdateScheduled {
+        let create = try req.content.decode(AppointmentDTO.UpdateScheduled.self)
+        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        let isScheduled = try req.content.get(Bool.self, at: "isScheduled")
-        appointment.isScheduled = isScheduled
-        try await appointment.save(on: req.db)
-        return appointment.toDTO()
+        appointment.isScheduled = create.isScheduled
+        try await appointment.update(on: req.db)
+        return create
     }
-
-    func updateCallStudent(req: Request) async throws -> AppointmentDTO {
-        guard let appointment = try await Appointment.find(req.parameters.require("id"), on: req.db) else {
+    
+    func updateCallStudent(req: Request) async throws -> AppointmentDTO.UpdateCallStudent {
+        let create = try req.content.decode(AppointmentDTO.UpdateCallStudent.self)
+        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        let callStudent = try req.content.get(Bool.self, at: "callStudent")
-        appointment.callStudent = callStudent
-        try await appointment.save(on: req.db)
-        return appointment.toDTO()
+        appointment.callStudent = create.callStudent
+        try await appointment.update(on: req.db)
+        return create
     }
-
-    func updateIsDone(req: Request) async throws -> AppointmentDTO {
-        guard let appointment = try await Appointment.find(req.parameters.require("id"), on: req.db) else {
+    
+    func updateIsDone(req: Request) async throws -> AppointmentDTO.UpdateDone {
+        let create = try req.content.decode(AppointmentDTO.UpdateDone.self)
+        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        let isDone = try req.content.get(Bool.self, at: "isDone")
-        appointment.isDone = isDone
-        try await appointment.save(on: req.db)
-        return appointment.toDTO()
+        appointment.isDone = create.isDone
+        try await appointment.update(on: req.db)
+        return create
     }
-
+    
     func delete(req: Request) async throws -> HTTPStatus {
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)

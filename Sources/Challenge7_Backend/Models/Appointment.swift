@@ -39,10 +39,13 @@ final class Appointment: Model, @unchecked Sendable {
     @Boolean(key: "isDone")
     var isDone: Bool
     
+    @Field(key: "createdAt")
+    var createdAt: Date
+    
     
     init() { }
     
-    init(id: UUID? = nil, mentor: User.id, student: User.id, appointmentPlace: String, appointmentCategory: UserPath, appointmentType: AppointmentType, isScheduled: Bool, callStudent: Bool, isDone: Bool) {
+    init(id: UUID? = nil, mentor: User.id, student: User.id, appointmentPlace: String, appointmentCategory: UserPath, appointmentType: AppointmentType, isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date) {
         self.id = id
         self.mentor = mentor
         self.student = student
@@ -51,6 +54,7 @@ final class Appointment: Model, @unchecked Sendable {
         self.isScheduled = false
         self.callStudent = false
         self.isDone = false
+        self.createdAt = Date.now
     }
     
     
@@ -64,7 +68,8 @@ final class Appointment: Model, @unchecked Sendable {
             appointmentType: self.$appointmentCategory.value,
             isScheduled: self.$isScheduled.value,
             callStudent: self.$callStudent.value,
-            isDone: self.$isDone.value
+            isDone: self.$isDone.value,
+            createdAt: self.$createdAt.value
         )
     }
     

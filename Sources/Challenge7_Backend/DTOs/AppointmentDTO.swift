@@ -17,6 +17,7 @@ struct AppointmentDTO: Content {
     var isScheduled: Bool?
     var callStudent: Bool?
     var isDone: Bool?
+    var createdAt: Date?
     
     func toModel() -> Appointment {
         let model = Appointment()
@@ -49,5 +50,35 @@ struct AppointmentDTO: Content {
         if let isDone = self.isDone {
             model.isDone = isDone
         }
+        
+        if let createdAt = self.createdAt {
+            model.createdAt = createdAt
+        }
+    }
+}
+
+extension AppointmentDTO {
+    struct UpdateMentor : Content {
+        var id: UUID
+        var mentor: User.id
+    }
+    struct UpdatePlace: Content {
+        var id: UUID
+        var appointmentPlace: UserPath
+    }
+    
+    struct UpdateScheduled : Content {
+        var id: UUID
+        var isScheduled: Bool
+    }
+    
+    struct UpdateCallStudent : Content {
+        var id: UUID
+        var callStudent: Bool
+    }
+    
+    struct UpdateDone : Content {
+        var id: UUID
+        var isDone: Bool
     }
 }
