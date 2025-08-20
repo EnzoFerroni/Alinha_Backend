@@ -10,6 +10,9 @@ import Vapor
 import Foundation
 
 final class Organization: Model, @unchecked Sendable {
+    
+    @Children(for: \.$organization)
+    var users: [User]
 
     static let schema = "organizations"
     
