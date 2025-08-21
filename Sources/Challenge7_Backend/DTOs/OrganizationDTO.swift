@@ -92,6 +92,3 @@ extension OrganizationDTO {
         var unscheduleQueue: [String]
     }
 }
-
-
-
