@@ -49,10 +49,10 @@ final class User: Model, @unchecked Sendable, Content{
     @Field(key: "password")
     var password: String
     
-    @Field(key: "role")
+    @Enum(key: "role")
     var role: UserRole
     
-    @Field(key: "path")
+    @Enum(key: "path")
     var path: UserPath
     
     
