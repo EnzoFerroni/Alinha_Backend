@@ -53,44 +53,34 @@ struct OrganizationDTO: Content {
 
 extension OrganizationDTO {
     struct UpdateName: Content {
-        var id: UUID
         var name: String
     }
-}
 
-extension OrganizationDTO {
     struct UpdateAppointmentPlaces: Content {
-        var id: UUID
         var appointmentPlaces: [String]
     }
-}
 
-extension OrganizationDTO {
     struct UpdateMentors: Content {
-        var id: UUID
         var mentors: [String]
     }
-}
 
-extension OrganizationDTO {
     struct UpdateAvailableMentors: Content {
-        var id: UUID
         var availableMentors: [String]
     }
-}
 
-extension OrganizationDTO {
     struct UpdateQueue: Content {
-        var id: UUID
         var queue: [String]
     }
-}
 
-extension OrganizationDTO {
     struct UpdateUnscheduleQueue: Content {
-        var id: UUID
+        var unscheduleQueue: [String]
+    }
+
+    struct GetQueue: Content {
+        var queue: [String]
+    }
+
+    struct GetUnscheduleQueue: Content {
         var unscheduleQueue: [String]
     }
 }
-
-
