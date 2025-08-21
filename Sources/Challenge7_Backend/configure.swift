@@ -17,16 +17,6 @@ public func configure(_ app: Application) async throws {
         tls: .prefer(try .init(configuration: .clientDefault)))
     ), as: .psql)
     
-    let corsConfiguration = CORSMiddleware.Configuration(
-        allowedOrigin: .all,
-        allowedMethods: [.GET, .POST, .PUT, .PATCH, .DELETE],
-        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin]
-    )
-    
-    let cors = CORSMiddleware(configuration: corsConfiguration)
-    
-    app.middleware.use(cors, at: .beginning)
-
     app.migrations.add(OrganizationMigration())
     app.migrations.add(UserMigration())
     app.migrations.add(CreateAppointment())
