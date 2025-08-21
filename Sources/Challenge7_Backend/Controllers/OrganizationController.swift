@@ -12,7 +12,7 @@ struct OrganizationsController: RouteCollection {
         let organizations = routes.grouped("organizations")
         organizations.get(use: index)
         organizations.post(use: create)
-
+        
         organizations.group(":id") { organization in
             organization.patch("name", use: updateName)
             organization.patch("appointmentPlaces", use: updateAppointmentPlaces)
@@ -25,11 +25,11 @@ struct OrganizationsController: RouteCollection {
             
         }
     }
-
+    
     func index(req: Request) async throws -> [OrganizationDTO] {
         try await Organization.query(on: req.db).all().map { $0.toDTO()}
     }
-
+    
     func create(req: Request) async throws -> OrganizationDTO {
         let organization = try req.content.decode(OrganizationDTO.self)
         let organizationModel = organization.toModel()
@@ -37,14 +37,14 @@ struct OrganizationsController: RouteCollection {
         return organization
     }
     
-
+    
     func show(req: Request) async throws -> OrganizationDTO {
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
         return organization.toDTO()
     }
-
+    
     func updateName(req: Request) async throws -> OrganizationDTO.UpdateName {
         let create = try req.content.decode(OrganizationDTO.UpdateName.self)
         guard let organization = try await Organization.find(create.id, on: req.db) else {
@@ -112,4 +112,5 @@ struct OrganizationsController: RouteCollection {
         try await organization.delete(on: req.db)
         return .ok
     }
+    
 }

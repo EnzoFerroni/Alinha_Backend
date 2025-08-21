@@ -13,7 +13,7 @@ struct OrganizationDTO: Content {
     var name: String?
     var token: String?
     var appointmentPlaces: [String]?
-    var mentors: [String]?
+    var mentors: [User]?
     var availableMentors: [String]?
     var queue: [String]?
     var unscheduleQueue: [String]?
