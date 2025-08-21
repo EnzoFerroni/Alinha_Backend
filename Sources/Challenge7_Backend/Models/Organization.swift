@@ -13,7 +13,7 @@ final class Organization: Model, @unchecked Sendable {
     
     @Children(for: \.$organization)
     var users: [User]
-
+    
     static let schema = "TB_organizations"
     
     @ID(key: .id)
@@ -29,20 +29,21 @@ final class Organization: Model, @unchecked Sendable {
     var appointmentPlaces: [String]
     
     @Field(key: "mentors")
-    var mentors: [String]
+    var mentors: [User]
     
     @Field(key: "availableMentors")
-    var availableMentors: [String]
+    var availableMentors: [User]
     
     @Field(key: "queue")
-    var queue: [String]
+    var queue: [Appointment]
     
     @Field(key: "unscheduleQueue")
-    var unscheduleQueue: [String]
+    var unscheduleQueue: [Appointment]
     
     init() { }
     
-    init(id: UUID? = nil, name: String, token: String, appointmentPlaces: [String], mentors: [String], availableMentors: [String], queue: [String], unscheduleQueue: [String]) {
+    init(id: UUID? = nil, name: String, token: String, appointmentPlaces: [String], mentors: [User], availableMentors: [User], queue: [Appointment], unscheduleQueue: [Appointment]) {
+        
         self.id = id
         self.name = name
         self.token = token
@@ -54,15 +55,14 @@ final class Organization: Model, @unchecked Sendable {
     }
     
     func toDTO() -> OrganizationDTO {
-        .init(
+        return OrganizationDTO(
             id: self.id,
-            name: self.$name.value,
-            token: self.$token.value,
-            appointmentPlaces: self.$appointmentPlaces.value,
-            mentors: self.$mentors.value,
-            availableMentors: self.$availableMentors.value,
-            queue: self.$queue.value,
-            unscheduleQueue: self.$unscheduleQueue.value
-        )
+            name: self.name,
+            token: self.token,
+            appointmentPlaces: self.appointmentPlaces,
+            mentors: self.mentors.map { $0.id?.uuidString ?? "" },
+            availableMentors: self.availableMentors.map { $0.id?.uuidString ?? "" },
+            queue: self.queue.map { $0.id?.uuidString ?? "" },
+            unscheduleQueue: self.unscheduleQueue.map { $0.id?.uuidString ?? "" })
     }
 }

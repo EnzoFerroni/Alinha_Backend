@@ -130,4 +130,5 @@ struct OrganizationsController: RouteCollection {
         try await organization.delete(on: req.db)
         return .ok
     }
+    
 }
