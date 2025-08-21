@@ -14,9 +14,9 @@ struct OrganizationDTO: Content {
     var token: String?
     var appointmentPlaces: [String]?
     var mentors: [User]?
-    var availableMentors: [String]?
-    var queue: [String]?
-    var unscheduleQueue: [String]?
+    var availableMentors: [User]?
+    var queue: [Appointment]?
+    var unscheduleQueue: [Appointment]?
     
     func toModel() -> Organization {
         let model = Organization()
@@ -55,32 +55,32 @@ extension OrganizationDTO {
     struct UpdateName: Content {
         var name: String
     }
-
+    
     struct UpdateAppointmentPlaces: Content {
         var appointmentPlaces: [String]
     }
-
+    
     struct UpdateMentors: Content {
-        var mentors: [String]
+        var mentors: [User]
     }
-
+    
     struct UpdateAvailableMentors: Content {
-        var availableMentors: [String]
+        var availableMentors: [User]
     }
-
+    
     struct UpdateQueue: Content {
-        var queue: [String]
+        var queue: [Appointment]
     }
-
+    
     struct UpdateUnscheduleQueue: Content {
-        var unscheduleQueue: [String]
+        var unscheduleQueue: [Appointment]
     }
-
+    
     struct GetQueue: Content {
-        var queue: [String]
+        var queue: [Appointment]
     }
-
+    
     struct GetUnscheduleQueue: Content {
-        var unscheduleQueue: [String]
+        var unscheduleQueue: [Appointment]
     }
 }
