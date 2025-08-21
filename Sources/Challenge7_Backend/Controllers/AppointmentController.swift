@@ -45,7 +45,7 @@ struct AppointmentController: RouteCollection {
     
     func updateMentor(req: Request) async throws -> AppointmentDTO.UpdateMentor {
         let create = try req.content.decode(AppointmentDTO.UpdateMentor.self)
-        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
+        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.mentor = create.mentor
@@ -55,7 +55,7 @@ struct AppointmentController: RouteCollection {
     
     func updatePlace(req: Request) async throws -> AppointmentDTO.UpdatePlace {
         let create = try req.content.decode(AppointmentDTO.UpdatePlace.self)
-        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
+        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
         
@@ -66,7 +66,7 @@ struct AppointmentController: RouteCollection {
     
     func updateScheduled(req: Request) async throws -> AppointmentDTO.UpdateScheduled {
         let create = try req.content.decode(AppointmentDTO.UpdateScheduled.self)
-        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
+        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.isScheduled = create.isScheduled
@@ -76,7 +76,7 @@ struct AppointmentController: RouteCollection {
     
     func updateCallStudent(req: Request) async throws -> AppointmentDTO.UpdateCallStudent {
         let create = try req.content.decode(AppointmentDTO.UpdateCallStudent.self)
-        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
+        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.callStudent = create.callStudent
@@ -86,7 +86,7 @@ struct AppointmentController: RouteCollection {
     
     func updateIsDone(req: Request) async throws -> AppointmentDTO.UpdateDone {
         let create = try req.content.decode(AppointmentDTO.UpdateDone.self)
-        guard let appointment = try await Appointment.find(create.id, on: req.db) else {
+        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.isDone = create.isDone

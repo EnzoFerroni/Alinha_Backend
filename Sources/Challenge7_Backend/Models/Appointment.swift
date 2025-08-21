@@ -15,10 +15,10 @@ final class Appointment: Model, @unchecked Sendable {
     @ID(key: .id)
     var id: UUID?
     
-    @Field(key: "mentor")
+    @Field(key: "mentor_id")
     var mentor: User
     
-    @Field(key: "student")
+    @Field(key: "student_id")
     var student: User
     
     @Field(key: "appointmentPlace")

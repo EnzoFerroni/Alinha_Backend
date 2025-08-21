@@ -70,22 +70,18 @@ extension AppointmentDTO {
         var mentor: User
     }
     struct UpdatePlace: Content {
-        var id: UUID
         var appointmentPlace: String
     }
     
     struct UpdateScheduled : Content {
-        var id: UUID
         var isScheduled: Bool
     }
     
     struct UpdateCallStudent : Content {
-        var id: UUID
         var callStudent: Bool
     }
     
     struct UpdateDone : Content {
-        var id: UUID
         var isDone: Bool
     }
 }
