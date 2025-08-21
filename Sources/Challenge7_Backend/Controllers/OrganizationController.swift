@@ -21,6 +21,8 @@ struct OrganizationsController: RouteCollection {
             organization.patch("queue", use: updateQueue)
             organization.patch("unscheduleQueue", use: updateUnscheduleQueue)
             organization.get(use: show)
+            organization.get("queue", use: getQueue)
+            organization.get("unscheduleQueue", use: getUnscheduleQueue)
             organization.delete(use: delete)
             
         }
