@@ -20,7 +20,6 @@ struct UserController: RouteCollection{
             user.get(use: show)
             user.put(use: update)
             user.delete(use: delete)
-            
         }
     }
     
