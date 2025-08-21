@@ -14,7 +14,7 @@ struct UserController: RouteCollection{
     func boot(routes: any RoutesBuilder) throws{
         let users = routes.grouped("users")
         users.get(use: index)
-        users.get(use: create)
+        users.post(use: create)
         
         users.group(":id"){user in
             user.get(use: show)
