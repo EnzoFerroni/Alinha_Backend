@@ -28,7 +28,7 @@ final class Appointment: Model, @unchecked Sendable {
     /// The category of the appointment, based on user path.
     @Enum(key: "appointmentCategory")
     var appointmentCategory: UserPath
-    /// The type of the appointment (e.g., Dúvida, Problema).
+    /// The type of the appointment (e.g., ddoubt, problem).
     @Enum(key: "appointmentType")
     var appointmentType: AppointmentType
     /// Indicates if the appointment is scheduled.

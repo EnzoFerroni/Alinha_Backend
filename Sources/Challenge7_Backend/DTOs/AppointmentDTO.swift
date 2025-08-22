@@ -20,7 +20,7 @@ struct AppointmentDTO: Content {
     var appointmentPlace: String?
     /// Category of the appointment, based on user path.
     var appointmentCategory: UserPath?
-    /// Type of the appointment (e.g., Dúvida, Problema).
+    /// Type of the appointment (e.g., ddoubt, problem).
     var appointmentType: AppointmentType?
     /// Indicates if the appointment is scheduled.
     var isScheduled: Bool?
