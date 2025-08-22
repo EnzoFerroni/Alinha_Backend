@@ -20,7 +20,6 @@ struct UserController: RouteCollection{
             user.get(use: show)
             user.put(use: update)
             user.delete(use: delete)
-            
         }
     }
     
@@ -96,5 +95,70 @@ struct UserController: RouteCollection{
         return .ok
     }
     
+    
+    // MARK: - Admin
+
+        func adminShowUser(req: Request) async throws -> UserDTO {
+            let me = try req.auth.require(User.self)
+            let target = try await findUser(req)
+
+            guard UserPolicy.canEditUser(actor: me, target: target) else {
+                throw Abort(.forbidden)
+            }
+            return target.toDTO()
+        }
+
+        struct UserAdminUpdateDTO: Content {
+            var name: String?
+            var email: String?
+            var path: UserPath?
+            var role: UserRole? 
+        }
+
+        func adminUpdateUser(req: Request) async throws -> UserDTO {
+            let me = try req.auth.require(User.self)
+            let target = try await findUser(req)
+            let body = try req.content.decode(UserAdminUpdateDTO.self)
+
+            guard UserPolicy.canEditUser(actor: me, target: target) else {
+                throw Abort(.unauthorized)
+            }
+
+            if let name = body.name { target.name = name }
+            if let email = body.email { target.email = email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }
+            if let path = body.path { target.path = path }
+            if let role = body.role {
+                guard UserPolicy.canChangeRole(actor: me, target: target) else {
+                    throw Abort(.unauthorized, reason: "Only admin can change user role.")
+                }
+                target.role = role
+            }
+
+            try await target.update(on: req.db)
+            return target.toDTO()
+        }
+
+        func adminDeleteUser(req: Request) async throws -> HTTPStatus {
+            let me = try req.auth.require(User.self)
+            let target = try await findUser(req)
+
+            guard UserPolicy.canEditUser(actor: me, target: target) else {
+                throw Abort(.forbidden)
+            }
+
+            try await target.delete(on: req.db)
+            return .ok
+        }
+
+        // MARK: - Helpers
+
+        private func findUser(_ req: Request) async throws -> User {
+            guard let idStr = req.parameters.get("id"),
+                  let uuid = UUID(uuidString: idStr),
+                  let user = try await User.find(uuid, on: req.db) else {
+                throw Abort(.notFound)
+            }
+            return user
+        }
     
 }
