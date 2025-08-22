@@ -60,9 +60,9 @@ final class Organization: Model, @unchecked Sendable {
             name: self.name,
             token: self.token,
             appointmentPlaces: self.appointmentPlaces,
-            mentors: self.mentors.map { $0.id?.uuidString ?? "" },
-            availableMentors: self.availableMentors.map { $0.id?.uuidString ?? "" },
-            queue: self.queue.map { $0.id?.uuidString ?? "" },
-            unscheduleQueue: self.unscheduleQueue.map { $0.id?.uuidString ?? "" })
+            mentors: self.mentors,
+            availableMentors: self.availableMentors,
+            queue: self.queue,
+            unscheduleQueue: self.unscheduleQueue)
     }
 }

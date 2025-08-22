@@ -113,6 +113,52 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
+    func addAppointmentToQueue(req: Request) async throws -> OrganizationDTO.AddAppointmentToQueue {
+        let create = try req.content.decode(OrganizationDTO.AddAppointmentToQueue.self)
+        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        organization.queue.append(create.appointment)
+        try await organization.update(on: req.db)
+        return create
+    }
+    
+    func addAppointmentToUnscheduleQueue(req: Request) async throws -> OrganizationDTO.AddAppointmentToUnscheduleQueue {
+        let create = try req.content.decode(OrganizationDTO.AddAppointmentToUnscheduleQueue.self)
+        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        organization.unscheduleQueue.append(create.appointment)
+        try await organization.update(on: req.db)
+        return create
+    }
+    
+    func removeFirstAppointmentFromQueue(req: Request) async throws -> OrganizationDTO.RemoveFirstAppointmentFromQueue {
+        let create = try req.content.decode(OrganizationDTO.RemoveFirstAppointmentFromQueue.self)
+        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        guard !organization.queue.isEmpty else {
+            throw Abort(.badRequest, reason: "Queue is empty")
+        }
+        organization.queue.removeFirst()
+        try await organization.update(on: req.db)
+        return create
+    }
+    
+    func removeFirstAppointmentFromUnscheduleQueue(req: Request) async throws -> OrganizationDTO.RemoveFirstAppointmentFromUnscheduleQueue {
+        let create = try req.content.decode(OrganizationDTO.RemoveFirstAppointmentFromUnscheduleQueue.self)
+        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        guard !organization.unscheduleQueue.isEmpty else {
+            throw Abort(.badRequest, reason: "Unschedule Queue is empty")
+        }
+        organization.unscheduleQueue.removeFirst()
+        try await organization.update(on: req.db)
+        return create
+    }
+    
     func updateUnscheduleQueue(req: Request) async throws -> OrganizationDTO.UpdateUnscheduleQueue {
         let create = try req.content.decode(OrganizationDTO.UpdateUnscheduleQueue.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -122,6 +168,7 @@ struct OrganizationsController: RouteCollection {
         try await organization.update(on: req.db)
         return create
     }
+    
     
     func delete(req: Request) async throws -> HTTPStatus {
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
