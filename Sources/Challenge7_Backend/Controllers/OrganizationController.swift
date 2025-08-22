@@ -8,6 +8,8 @@
 import Vapor
 
 struct OrganizationsController: RouteCollection {
+    /// initializes all gates
+    /// - Parameter routes: builds routes
     func boot(routes: any RoutesBuilder) throws {
         let organizations = routes.grouped("organizations")
         organizations.get(use: index)
@@ -33,10 +35,12 @@ struct OrganizationsController: RouteCollection {
         }
     }
     
+    ///Fetches all organizations
     func index(req: Request) async throws -> [OrganizationDTO] {
         try await Organization.query(on: req.db).all().map { $0.toDTO()}
     }
     
+    ///Creates an organization
     func create(req: Request) async throws -> OrganizationDTO {
         let organization = try req.content.decode(OrganizationDTO.self)
         let organizationModel = organization.toModel()
@@ -44,7 +48,7 @@ struct OrganizationsController: RouteCollection {
         return organization
     }
     
-    
+    ///Fetches the orgs based on an unique ID
     func show(req: Request) async throws -> OrganizationDTO {
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
@@ -52,6 +56,7 @@ struct OrganizationsController: RouteCollection {
         return organization.toDTO()
     }
     
+    ///Fetches the org Queue
     func getQueue(req: Request) async throws -> OrganizationDTO.GetQueue {
         let create = try req.content.decode(OrganizationDTO.GetQueue.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -60,6 +65,7 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
+    ///fetches the appointments that were scheduled
     func getUnscheduleQueue(req: Request) async throws -> OrganizationDTO.GetUnscheduleQueue {
         let create = try req.content.decode(OrganizationDTO.GetUnscheduleQueue.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -68,6 +74,7 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
+    ///Updates org name
     func updateName(req: Request) async throws -> OrganizationDTO.UpdateName {
         let create = try req.content.decode(OrganizationDTO.UpdateName.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -78,6 +85,7 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
+    ///Update org appointment name
     func updateAppointmentPlaces(req: Request) async throws -> OrganizationDTO.UpdateAppointmentPlaces {
         let create = try req.content.decode(OrganizationDTO.UpdateAppointmentPlaces.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -88,6 +96,7 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
+    ///Updates all org mentors
     func updateMentors(req: Request) async throws -> OrganizationDTO.UpdateMentors {
         let create = try req.content.decode(OrganizationDTO.UpdateMentors.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -98,6 +107,7 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
+    ///Updates org avaliable mentors
     func updateAvailableMentors(req: Request) async throws -> OrganizationDTO.UpdateAvailableMentors {
         let create = try req.content.decode(OrganizationDTO.UpdateAvailableMentors.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -118,6 +128,7 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
+    ///Add a new appointment to Queue
     func addAppointmentToQueue(req: Request) async throws -> OrganizationDTO.AddAppointmentToQueue {
         let create = try req.content.decode(OrganizationDTO.AddAppointmentToQueue.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -138,6 +149,7 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
+    ///After the appointment is assigned, removes it from the Queue
     func removeFirstAppointmentFromQueue(req: Request) async throws -> OrganizationDTO.RemoveFirstAppointmentFromQueue {
         let create = try req.content.decode(OrganizationDTO.RemoveFirstAppointmentFromQueue.self)
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
@@ -174,7 +186,7 @@ struct OrganizationsController: RouteCollection {
         return create
     }
     
-    
+    ///deletes the org
     func delete(req: Request) async throws -> HTTPStatus {
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
