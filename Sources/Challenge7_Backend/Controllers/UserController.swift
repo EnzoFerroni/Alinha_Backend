@@ -121,7 +121,7 @@ struct UserController: RouteCollection{
             let body = try req.content.decode(UserAdminUpdateDTO.self)
 
             guard UserPolicy.canEditUser(actor: me, target: target) else {
-                throw Abort(.forbidden)
+                throw Abort(.unauthorized)
             }
 
             if let name = body.name { target.name = name }
@@ -129,7 +129,7 @@ struct UserController: RouteCollection{
             if let path = body.path { target.path = path }
             if let role = body.role {
                 guard UserPolicy.canChangeRole(actor: me, target: target) else {
-                    throw Abort(.forbidden, reason: "Only admin can change user role.")
+                    throw Abort(.unauthorized, reason: "Only admin can change user role.")
                 }
                 target.role = role
             }
