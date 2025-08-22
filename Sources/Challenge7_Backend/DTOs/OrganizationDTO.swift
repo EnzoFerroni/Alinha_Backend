@@ -13,10 +13,10 @@ struct OrganizationDTO: Content {
     var name: String?
     var token: String?
     var appointmentPlaces: [String]?
-    var mentors: [String]?
-    var availableMentors: [String]?
-    var queue: [String]?
-    var unscheduleQueue: [String]?
+    var mentors: [User]?
+    var availableMentors: [User]?
+    var queue: [Appointment]?
+    var unscheduleQueue: [Appointment]?
     
     func toModel() -> Organization {
         let model = Organization()
@@ -53,44 +53,50 @@ struct OrganizationDTO: Content {
 
 extension OrganizationDTO {
     struct UpdateName: Content {
-        var id: UUID
         var name: String
     }
-}
-
-extension OrganizationDTO {
+    
     struct UpdateAppointmentPlaces: Content {
-        var id: UUID
         var appointmentPlaces: [String]
     }
-}
-
-extension OrganizationDTO {
+    
     struct UpdateMentors: Content {
-        var id: UUID
-        var mentors: [String]
+        var mentors: [User]
     }
-}
-
-extension OrganizationDTO {
+    
     struct UpdateAvailableMentors: Content {
-        var id: UUID
-        var availableMentors: [String]
+        var availableMentors: [User]
     }
-}
-
-extension OrganizationDTO {
+    
     struct UpdateQueue: Content {
-        var id: UUID
-        var queue: [String]
+        var queue: [Appointment]
     }
-}
-
-extension OrganizationDTO {
+    
     struct UpdateUnscheduleQueue: Content {
-        var id: UUID
-        var unscheduleQueue: [String]
+        var unscheduleQueue: [Appointment]
+    }
+    
+    struct GetQueue: Content {
+        var queue: [Appointment]
+    }
+    
+    struct GetUnscheduleQueue: Content {
+        var unscheduleQueue: [Appointment]
+    }
+    
+    struct AddAppointmentToQueue: Content {
+        var appointment: Appointment
+    }
+    
+    struct AddAppointmentToUnscheduleQueue: Content {
+        var appointment: Appointment
+    }
+    
+    struct RemoveFirstAppointmentFromQueue: Content {
+        var appointmentId: UUID
+    }
+    
+    struct RemoveFirstAppointmentFromUnscheduleQueue: Content {
+        var appointmentId: UUID
     }
 }
-
-

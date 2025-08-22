@@ -17,10 +17,10 @@ final class Appointment: Model, @unchecked Sendable {
     @ID(key: .id)
     var id: UUID?
     /// The mentor associated with the appointment.
-    @Field(key: "mentor")
+    @Field(key: "mentor_id")
     var mentor: User
     /// The student associated with the appointment.
-    @Field(key: "student")
+    @Field(key: "student_id")
     var student: User
     /// The place where the appointment will occur.
     @Field(key: "appointmentPlace")

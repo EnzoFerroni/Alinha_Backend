@@ -9,21 +9,6 @@ import Foundation
 import Vapor
 import Fluent
 
-//MARK: - Enums
-
-///Enumerates different types (permissions) of users
-enum UserRole: String, Codable {
-    case adm
-    case mentor
-    case student
-}
-
-///Enumerates differents types of user path of interest
-enum UserPath: String, Codable {
-    case design
-    case code
-    case undefined
-}
 
 //MARK: - User Model
 
