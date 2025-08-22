@@ -38,7 +38,7 @@ struct UserController: RouteCollection{
         try UserDTO.Create.validate(content: req)
         let create = try req.content.decode(UserDTO.Create.self)
         guard create.password == create.confirmedPassword else{
-            throw Abort(.badRequest, reason: "Wrong Password!")
+            throw Abort(.badRequest, reason: "password doesn't match")
         }
         
         let user = try User(
