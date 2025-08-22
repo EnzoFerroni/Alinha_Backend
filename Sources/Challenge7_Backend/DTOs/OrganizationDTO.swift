@@ -83,4 +83,20 @@ extension OrganizationDTO {
     struct GetUnscheduleQueue: Content {
         var unscheduleQueue: [Appointment]
     }
+    
+    struct AddAppointmentToQueue: Content {
+        var appointment: Appointment
+    }
+    
+    struct AddAppointmentToUnscheduleQueue: Content {
+        var appointment: Appointment
+    }
+    
+    struct RemoveFirstAppointmentFromQueue: Content {
+        var appointmentId: UUID
+    }
+    
+    struct RemoveFirstAppointmentFromUnscheduleQueue: Content {
+        var appointmentId: UUID
+    }
 }
