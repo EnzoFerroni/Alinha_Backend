@@ -23,6 +23,11 @@ struct OrganizationsController: RouteCollection {
             organization.get(use: show)
             organization.get("queue", use: getQueue)
             organization.get("unscheduleQueue", use: getUnscheduleQueue)
+            organization.patch("addAppointmentToQueue", use: addAppointmentToQueue)
+            organization.patch("addAppointmentToUnscheduleQueue", use: addAppointmentToUnscheduleQueue)
+            organization.patch("removeFirstAppointmentFromQueue", use: removeFirstAppointmentFromQueue)
+            organization.patch("removeFirstAppointmentFromUnscheduleQueue", use: removeFirstAppointmentFromUnscheduleQueue)
+            
             organization.delete(use: delete)
             
         }
