@@ -9,12 +9,14 @@ import Fluent
 import Vapor
 import Foundation
 
+
+//MARK: - Organization Model
 final class Organization: Model, @unchecked Sendable {
-    
+    /*Organization Atributes*/
     @Children(for: \.$organization)
     var users: [User]
     
-    static let schema = "TB_organizations"
+    static let schema = "TB_organizations" // Name that will be on SQL table
     
     @ID(key: .id)
     var id: UUID?
@@ -42,6 +44,16 @@ final class Organization: Model, @unchecked Sendable {
     
     init() { }
     
+    /// Initializes Organization class
+    /// - Parameters:
+    ///   - id: org ID
+    ///   - name: org Name
+    ///   - token: the user will access the org by this token
+    ///   - appointmentPlaces: where the user will be attended
+    ///   - mentors: All org mentors
+    ///   - availableMentors: Mentors that can receeve new appointments
+    ///   - queue: Queue of appointments
+    ///   - unscheduleQueue: queue that does not have a mentor yet
     init(id: UUID? = nil, name: String, token: String, appointmentPlaces: [String], mentors: [User], availableMentors: [User], queue: [Appointment], unscheduleQueue: [Appointment]) {
         
         self.id = id
@@ -54,6 +66,8 @@ final class Organization: Model, @unchecked Sendable {
         self.unscheduleQueue = unscheduleQueue
     }
     
+    /// Turns the org into AorganizationDTO
+    /// - Returns: AorganizationDTO
     func toDTO() -> OrganizationDTO {
         return OrganizationDTO(
             id: self.id,

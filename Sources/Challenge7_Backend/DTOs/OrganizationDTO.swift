@@ -8,7 +8,9 @@
 import Fluent
 import Vapor
 
+/// A DTO is a type that represents what a client should send or receive.
 struct OrganizationDTO: Content {
+    ///Org Atributes
     var id: UUID?
     var name: String?
     var token: String?
@@ -18,6 +20,8 @@ struct OrganizationDTO: Content {
     var queue: [Appointment]?
     var unscheduleQueue: [Appointment]?
     
+    /// Converts the organization DTO to an organizationType
+    /// - Returns: Organization
     func toModel() -> Organization {
         let model = Organization()
         
@@ -51,6 +55,7 @@ struct OrganizationDTO: Content {
     }
 }
 
+///Updates the organization atributes
 extension OrganizationDTO {
     struct UpdateName: Content {
         var name: String

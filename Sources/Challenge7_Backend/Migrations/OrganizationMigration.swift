@@ -10,6 +10,8 @@ import Fluent
 
 struct OrganizationMigration: AsyncMigration {
     
+    ///  Make a change to the database.
+    /// - Parameter database: where the data is stored
     func prepare(on database: any Database) async throws {
         try await database.schema("TB_organizations")
             .id()
@@ -24,6 +26,7 @@ struct OrganizationMigration: AsyncMigration {
             .unique(on: "token")
             .create()
     }
+        ///Undo the change
         func revert(on database: any Database) async throws {
             try await database.schema("TB_organizations").delete()
         }
