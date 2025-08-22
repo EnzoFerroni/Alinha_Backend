@@ -8,7 +8,10 @@
 import Fluent
 import Vapor
 
+/// Controller for managing Appointment resources and their API endpoints.
 struct AppointmentController: RouteCollection {
+    /// Registers Appointment routes to the provided router.
+    /// - Parameter routes: The router to register routes to.
     func boot(routes: any RoutesBuilder) throws {
         let appointments = routes.grouped("appointments")
         appointments.get(use: index)
@@ -25,10 +28,13 @@ struct AppointmentController: RouteCollection {
         }
     }
     
+    /// Returns a list of all appointments.
     func index(req: Request) async throws -> [AppointmentDTO] {
         try await Appointment.query(on: req.db).all().map { $0.toDTO() }
     }
     
+    /// Creates a new appointment.
+    /// - Returns: The created AppointmentDTO.
     func create(req: Request) async throws -> AppointmentDTO {
         let appointment = try req.content.decode(AppointmentDTO.self)
         let appointmentModel = appointment.toModel()
@@ -36,6 +42,8 @@ struct AppointmentController: RouteCollection {
         return appointment
     }
     
+    /// Returns a specific appointment by ID.
+    /// - Returns: The requested AppointmentDTO.
     func show(req: Request) async throws -> AppointmentDTO {
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
@@ -43,6 +51,8 @@ struct AppointmentController: RouteCollection {
         return appointment.toDTO()
     }
     
+    /// Updates the mentor of an appointment.
+    /// - Returns: The updated mentor DTO.
     func updateMentor(req: Request) async throws -> AppointmentDTO.UpdateMentor {
         let create = try req.content.decode(AppointmentDTO.UpdateMentor.self)
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
@@ -53,17 +63,20 @@ struct AppointmentController: RouteCollection {
         return create
     }
     
+    /// Updates the place of an appointment.
+    /// - Returns: The updated place DTO.
     func updatePlace(req: Request) async throws -> AppointmentDTO.UpdatePlace {
         let create = try req.content.decode(AppointmentDTO.UpdatePlace.self)
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
-        
         appointment.appointmentPlace = create.appointmentPlace
         try await appointment.update(on: req.db)
         return create
     }
     
+    /// Updates the scheduled status of an appointment.
+    /// - Returns: The updated scheduled DTO.
     func updateScheduled(req: Request) async throws -> AppointmentDTO.UpdateScheduled {
         let create = try req.content.decode(AppointmentDTO.UpdateScheduled.self)
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
@@ -74,6 +87,8 @@ struct AppointmentController: RouteCollection {
         return create
     }
     
+    /// Updates the callStudent status of an appointment.
+    /// - Returns: The updated callStudent DTO.
     func updateCallStudent(req: Request) async throws -> AppointmentDTO.UpdateCallStudent {
         let create = try req.content.decode(AppointmentDTO.UpdateCallStudent.self)
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
@@ -84,6 +99,8 @@ struct AppointmentController: RouteCollection {
         return create
     }
     
+    /// Updates the done status of an appointment.
+    /// - Returns: The updated done DTO.
     func updateIsDone(req: Request) async throws -> AppointmentDTO.UpdateDone {
         let create = try req.content.decode(AppointmentDTO.UpdateDone.self)
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
@@ -94,11 +111,13 @@ struct AppointmentController: RouteCollection {
         return create
     }
     
-    func delete(req: Request) async throws -> HTTPStatus {
+    /// Deletes an appointment by ID.
+    /// - Returns: Deleted message if successful.
+    func delete(req: Request) async throws -> String {
         guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
         try await appointment.delete(on: req.db)
-        return .ok
+        return "Agendamento deletado com sucesso!"
     }
 }
