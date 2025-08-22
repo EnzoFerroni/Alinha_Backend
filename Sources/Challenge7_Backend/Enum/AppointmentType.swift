@@ -8,8 +8,8 @@
 import Foundation
 
 /// Enum representing the type of an appointment.
-/// - Dúvida: Appointment for questions.
-/// - Problema: Appointment for problems.
+/// - ddoubt: Appointment for questions.
+/// - problem: Appointment for problems.
 enum AppointmentType: String, Codable {
-    case Dúvida, Problema
+    case ddoubt, problem
 }
