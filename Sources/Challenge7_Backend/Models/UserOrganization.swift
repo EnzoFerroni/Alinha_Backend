@@ -43,8 +43,9 @@ final class UserOrganization: Model, @unchecked Sendable{
     func toDTO() -> UserOrganizationDTO{
         return UserOrganizationDTO(
             id: self.id,
-            org_id: self.org_id?,
-            user_id: self.user_id?,
-            user_role: self.user_role)
+            org_id: self.org_id?.id,
+            user_id: self.user_id?.id,
+            user_role: self.user_role
+        )
     }
 }
