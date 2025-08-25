@@ -40,5 +40,11 @@ final class UserOrganization: Model, @unchecked Sendable{
         self.user_role = user_role
     }
     
-    //TODO relationship DTO
+    func toDTO() -> UserOrganizationDTO{
+        return UserOrganizationDTO(
+            id: self.id,
+            org_id: self.org_id?,
+            user_id: self.user_id?,
+            user_role: self.user_role)
+    }
 }
