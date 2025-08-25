@@ -16,15 +16,15 @@ struct AppointmentController: RouteCollection {
         let appointments = routes.grouped("appointments")
         appointments.get(use: index)
         appointments.post(use: create)
+        appointments.delete(use: delete)
+        appointments.patch("mentor", use: updateMentor)
+        appointments.patch("place", use: updatePlace)
+        appointments.patch("isScheduled", use: updateScheduled)
+        appointments.patch("callStudent", use: updateCallStudent)
+        appointments.patch("isDone", use: updateIsDone)
         
         appointments.group(":id") { appointment in
             appointment.get(use: show)
-            appointment.delete(use: delete)
-            appointment.patch("mentor", use: updateMentor)
-            appointment.patch("place", use: updatePlace)
-            appointment.patch("isScheduled", use: updateScheduled)
-            appointment.patch("callStudent", use: updateCallStudent)
-            appointment.patch("isDone", use: updateIsDone)
         }
     }
     
@@ -37,7 +37,18 @@ struct AppointmentController: RouteCollection {
     /// - Returns: The created AppointmentDTO.
     func create(req: Request) async throws -> AppointmentDTO {
         let appointment = try req.content.decode(AppointmentDTO.self)
-        let appointmentModel = appointment.toModel()
+        let appointmentModel = Appointment(
+            organization: appointment.organization!,
+            mentor: appointment.mentor!,
+            student: appointment.student!,
+            appointmentPlace: appointment.appointmentPlace!,
+            appointmentCategory: appointment.appointmentCategory!,
+            appointmentType: appointment.appointmentType!,
+            isScheduled: appointment.isScheduled ?? false,
+            callStudent: appointment.callStudent ?? false,
+            isDone: appointment.isDone ?? false,
+            createdAt: appointment.createdAt!
+        )
         try await appointmentModel.save(on: req.db)
         return appointment
     }
@@ -55,7 +66,7 @@ struct AppointmentController: RouteCollection {
     /// - Returns: The updated mentor DTO.
     func updateMentor(req: Request) async throws -> AppointmentDTO.UpdateMentor {
         let create = try req.content.decode(AppointmentDTO.UpdateMentor.self)
-        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
+        guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.mentor = create.mentor
