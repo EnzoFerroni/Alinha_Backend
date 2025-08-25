@@ -78,7 +78,7 @@ struct AppointmentController: RouteCollection {
     /// - Returns: The updated place DTO.
     func updatePlace(req: Request) async throws -> AppointmentDTO.UpdatePlace {
         let create = try req.content.decode(AppointmentDTO.UpdatePlace.self)
-        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
+        guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.appointmentPlace = create.appointmentPlace
@@ -90,7 +90,7 @@ struct AppointmentController: RouteCollection {
     /// - Returns: The updated scheduled DTO.
     func updateScheduled(req: Request) async throws -> AppointmentDTO.UpdateScheduled {
         let create = try req.content.decode(AppointmentDTO.UpdateScheduled.self)
-        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
+        guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.isScheduled = create.isScheduled
@@ -102,7 +102,7 @@ struct AppointmentController: RouteCollection {
     /// - Returns: The updated callStudent DTO.
     func updateCallStudent(req: Request) async throws -> AppointmentDTO.UpdateCallStudent {
         let create = try req.content.decode(AppointmentDTO.UpdateCallStudent.self)
-        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
+        guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.callStudent = create.callStudent
@@ -114,7 +114,7 @@ struct AppointmentController: RouteCollection {
     /// - Returns: The updated done DTO.
     func updateIsDone(req: Request) async throws -> AppointmentDTO.UpdateDone {
         let create = try req.content.decode(AppointmentDTO.UpdateDone.self)
-        guard let appointment = try await Appointment.find(req.parameters.get("id"), on: req.db) else {
+        guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
         appointment.isDone = create.isDone

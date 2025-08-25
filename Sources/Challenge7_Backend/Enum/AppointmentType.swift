@@ -11,5 +11,5 @@ import Foundation
 /// - ddoubt: Appointment for questions.
 /// - problem: Appointment for problems.
 enum AppointmentType: String, Codable {
-    case ddoubt, problem
+    case doubt, problem
 }
