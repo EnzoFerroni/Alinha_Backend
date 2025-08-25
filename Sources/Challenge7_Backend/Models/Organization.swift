@@ -12,10 +12,6 @@ import Foundation
 
 //MARK: - Organization Model
 final class Organization: Model, @unchecked Sendable {
-    /*Organization Atributes*/
-    @Children(for: \.$organization)
-    var users: [User]
-    
     static let schema = "TB_organizations" // Name that will be on SQL table
     
     @ID(key: .id)
@@ -27,20 +23,20 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "token")
     var token: String
     
-    @Field(key: "appointmentPlaces")
+    @Field(key: "appointment_places")
     var appointmentPlaces: [String]
     
-    @Field(key: "mentors")
-    var mentors: [User]
+    @Field(key: "users")
+    var users: [UUID]
     
-    @Field(key: "availableMentors")
-    var availableMentors: [User]
+    @Field(key: "available_mentors")
+    var availableMentors: [UUID]
     
     @Field(key: "queue")
-    var queue: [Appointment]
+    var queue: [UUID]
     
-    @Field(key: "unscheduleQueue")
-    var unscheduleQueue: [Appointment]
+    @Field(key: "unschedule_queue")
+    var unscheduleQueue: [UUID]
     
     init() { }
     
@@ -50,33 +46,31 @@ final class Organization: Model, @unchecked Sendable {
     ///   - name: org Name
     ///   - token: the user will access the org by this token
     ///   - appointmentPlaces: where the user will be attended
-    ///   - mentors: All org mentors
-    ///   - availableMentors: Mentors that can receeve new appointments
-    ///   - queue: Queue of appointments
-    ///   - unscheduleQueue: queue that does not have a mentor yet
-    init(id: UUID? = nil, name: String, token: String, appointmentPlaces: [String], mentors: [User], availableMentors: [User], queue: [Appointment], unscheduleQueue: [Appointment]) {
-        
+    ///   - users: All org users UUIDs
+    ///   - availableMentors: Mentors that can receive new appointments UUIDs
+    ///   - queue: Queue of appointment UUIDs
+    ///   - unscheduleQueue: queue that does not have a mentor yet UUIDs
+    init(id: UUID? = nil, name: String, token: String, appointmentPlaces: [String], users: [UUID], availableMentors: [UUID], queue: [UUID], unscheduleQueue: [UUID]) {
         self.id = id
         self.name = name
         self.token = token
         self.appointmentPlaces = appointmentPlaces
-        self.mentors = mentors
+        self.users = users
         self.availableMentors = availableMentors
         self.queue = queue
         self.unscheduleQueue = unscheduleQueue
     }
     
-    /// Turns the org into AorganizationDTO
-    /// - Returns: AorganizationDTO
+    /// Turns the org into OrganizationDTO
+    /// - Returns: OrganizationDTO
     func toDTO() -> OrganizationDTO {
-        return OrganizationDTO(
-            id: self.id,
-            name: self.name,
-            token: self.token,
-            appointmentPlaces: self.appointmentPlaces,
-            mentors: self.mentors,
-            availableMentors: self.availableMentors,
-            queue: self.queue,
-            unscheduleQueue: self.unscheduleQueue)
+        .init(id: id,
+              name: name,
+              token: token,
+              appointmentPlaces: appointmentPlaces,
+              users: users,
+                availableMentors: availableMentors,
+                queue: queue,
+                unscheduleQueue: unscheduleQueue)
     }
 }

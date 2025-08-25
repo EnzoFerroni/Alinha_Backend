@@ -10,98 +10,86 @@ import Vapor
 
 /// A DTO is a type that represents what a client should send or receive.
 struct OrganizationDTO: Content {
-    ///Org Atributes
+    /// Org Attributes
     var id: UUID?
     var name: String?
     var token: String?
     var appointmentPlaces: [String]?
-    var mentors: [User]?
-    var availableMentors: [User]?
-    var queue: [Appointment]?
-    var unscheduleQueue: [Appointment]?
-    
-    /// Converts the organization DTO to an organizationType
-    /// - Returns: Organization
-    func toModel() -> Organization {
-        let model = Organization()
-        
-        model.id = self.id
-        if let id = self.id {
-            model.id = id
-        }
-        if let name = self.name {
-            model.name = name
-        }
-        if let token = self.token {
-            model.token = token
-        }
-        if let appointmentPlaces = self.appointmentPlaces {
-            model.appointmentPlaces = appointmentPlaces
-        }
-        if let mentors = self.mentors {
-            model.mentors = mentors
-        }
-        if let availableMentors = self.availableMentors {
-            model.availableMentors = availableMentors
-        }
-        if let queue = self.queue {
-            model.queue = queue
-        }
-        if let unscheduleQueue = self.unscheduleQueue {
-            model.unscheduleQueue = unscheduleQueue
-        }
-        
-        return model
-    }
+    var users: [UUID]?
+    var availableMentors: [UUID]?
+    var queue: [UUID]?
+    var unscheduleQueue: [UUID]?
+
 }
 
-///Updates the organization atributes
+/// Updates the organization attributes
 extension OrganizationDTO {
     struct UpdateName: Content {
+        var id: UUID
         var name: String
     }
     
     struct UpdateAppointmentPlaces: Content {
+        var id: UUID
         var appointmentPlaces: [String]
     }
     
-    struct UpdateMentors: Content {
-        var mentors: [User]
+    struct UpdateUsers: Content {
+        var id: UUID
+        var users: [UUID]
     }
     
     struct UpdateAvailableMentors: Content {
-        var availableMentors: [User]
+        var id: UUID
+        var availableMentors: [UUID]
     }
     
     struct UpdateQueue: Content {
-        var queue: [Appointment]
+        var id: UUID
+        var queue: [UUID]
     }
     
     struct UpdateUnscheduleQueue: Content {
-        var unscheduleQueue: [Appointment]
+        var id: UUID
+        var unscheduleQueue: [UUID]
     }
     
     struct GetQueue: Content {
-        var queue: [Appointment]
+        var id: UUID
+        var queue: [UUID]
     }
     
     struct GetUnscheduleQueue: Content {
-        var unscheduleQueue: [Appointment]
+        var id: UUID
+        var unscheduleQueue: [UUID]
     }
     
     struct AddAppointmentToQueue: Content {
-        var appointment: Appointment
+        var id: UUID
+        var appointmentId: UUID
     }
     
     struct AddAppointmentToUnscheduleQueue: Content {
-        var appointment: Appointment
+        var id: UUID
+        var appointmentId: UUID
     }
     
     struct RemoveFirstAppointmentFromQueue: Content {
+        var id: UUID
         var appointmentId: UUID
     }
     
     struct RemoveFirstAppointmentFromUnscheduleQueue: Content {
+        var id: UUID
         var appointmentId: UUID
+    }
+    
+    struct GetOrganizationByToken: Content {
+        var token: String
+    }
+    
+    struct GetAppointmentPlaces: Content {
+        var id: UUID
+        var appointmentPlaces: [String]
     }
 }

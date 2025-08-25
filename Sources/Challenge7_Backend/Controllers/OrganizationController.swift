@@ -8,47 +8,53 @@
 import Vapor
 
 struct OrganizationsController: RouteCollection {
-    /// initializes all gates
+    /// Initializes all routes
     /// - Parameter routes: builds routes
     func boot(routes: any RoutesBuilder) throws {
         let organizations = routes.grouped("organizations")
         organizations.get(use: index)
         organizations.post(use: create)
+        organizations.get("getOrganizationByToken", use: getOrganizationByToken)
+        organizations.patch("name", use: updateName)
+        organizations.patch("appointmentPlaces", use: updateAppointmentPlaces)
+        organizations.patch("users", use: updateUsers)
+        organizations.patch("availableMentors", use: updateAvailableMentors)
+        organizations.patch("queue", use: updateQueue)
+        organizations.patch("unscheduleQueue", use: updateUnscheduleQueue)
+        organizations.patch("addAppointmentToQueue", use: addAppointmentToQueue)
+        organizations.patch("addAppointmentToUnscheduleQueue", use: addAppointmentToUnscheduleQueue)
+        organizations.patch("removeFirstAppointmentFromQueue", use: removeFirstAppointmentFromQueue)
+        organizations.patch("removeFirstAppointmentFromUnscheduleQueue", use: removeFirstAppointmentFromUnscheduleQueue)
         
         organizations.group(":id") { organization in
-            organization.patch("name", use: updateName)
-            organization.patch("appointmentPlaces", use: updateAppointmentPlaces)
-            organization.patch("mentors", use: updateMentors)
-            organization.patch("availableMentors", use: updateAvailableMentors)
-            organization.patch("queue", use: updateQueue)
-            organization.patch("unscheduleQueue", use: updateUnscheduleQueue)
             organization.get(use: show)
-            organization.get("queue", use: getQueue)
-            organization.get("unscheduleQueue", use: getUnscheduleQueue)
-            organization.patch("addAppointmentToQueue", use: addAppointmentToQueue)
-            organization.patch("addAppointmentToUnscheduleQueue", use: addAppointmentToUnscheduleQueue)
-            organization.patch("removeFirstAppointmentFromQueue", use: removeFirstAppointmentFromQueue)
-            organization.patch("removeFirstAppointmentFromUnscheduleQueue", use: removeFirstAppointmentFromUnscheduleQueue)
-            
             organization.delete(use: delete)
             
         }
     }
     
-    ///Fetches all organizations
+    /// Fetches all organizations
     func index(req: Request) async throws -> [OrganizationDTO] {
-        try await Organization.query(on: req.db).all().map { $0.toDTO()}
+        try await Organization.query(on: req.db).all().map { $0.toDTO() }
     }
     
-    ///Creates an organization
+    /// Creates an organization
     func create(req: Request) async throws -> OrganizationDTO {
         let organization = try req.content.decode(OrganizationDTO.self)
-        let organizationModel = organization.toModel()
+        let organizationModel = Organization(
+            name: organization.name ?? "",
+            token: generateToken(),
+            appointmentPlaces: organization.appointmentPlaces ?? [],
+            users: organization.users ?? [],
+            availableMentors: organization.availableMentors ?? [],
+            queue: organization.queue ?? [],
+            unscheduleQueue: organization.unscheduleQueue ?? []
+        )
         try await organizationModel.save(on: req.db)
-        return organization
+        return organizationModel.toDTO()
     }
     
-    ///Fetches the orgs based on an unique ID
+    /// Fetches the organization based on a unique ID
     func show(req: Request) async throws -> OrganizationDTO {
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
@@ -56,103 +62,139 @@ struct OrganizationsController: RouteCollection {
         return organization.toDTO()
     }
     
-    ///Fetches the org Queue
+    /// Fetches organization by token
+    func getOrganizationByToken(req: Request) async throws -> OrganizationDTO {
+        let tokenRequest = try req.content.decode(OrganizationDTO.GetOrganizationByToken.self)
+        guard let organization = try await Organization.query(on: req.db)
+            .filter(\.$token, .equal, tokenRequest.token)
+            .first() else {
+            throw Abort(.notFound)
+        }
+        return organization.toDTO()
+    }
+    
+    func generateToken() -> String {
+        let characters = "0123456789"
+        return String((0..<6).map { _ in characters.randomElement()! })
+    }
+    
+    func getAppointmentPlaces(req: Request) async throws -> [OrganizationDTO] {
+        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        return [organization.toDTO()]
+    }
+    
+    /// Fetches the organization queue
     func getQueue(req: Request) async throws -> OrganizationDTO.GetQueue {
-        let create = try req.content.decode(OrganizationDTO.GetQueue.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let get = try req.content.decode(OrganizationDTO.GetQueue.self)
+        guard let organization = try await Organization.find(get.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        return create
+        return OrganizationDTO.GetQueue(queue: organization.queue)
     }
     
-    ///fetches the appointments that were scheduled
-    func getUnscheduleQueue(req: Request) async throws -> OrganizationDTO.GetUnscheduleQueue {
-        let create = try req.content.decode(OrganizationDTO.GetUnscheduleQueue.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+    /// Fetches the unscheduled appointments queue
+    func getUnscheduleQueue (req: Request) async throws -> OrganizationDTO.GetUnscheduleQueue {
+        let get = try req.content.decode(OrganizationDTO.GetUnscheduleQueue.self)
+        guard let organization = try await Organization.find(get.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        return create
+        return OrganizationDTO.GetUnscheduleQueue(unscheduleQueue: organization.unscheduleQueue)
     }
     
-    ///Updates org name
+    /// Updates organization name
     func updateName(req: Request) async throws -> OrganizationDTO.UpdateName {
-        let create = try req.content.decode(OrganizationDTO.UpdateName.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let update = try req.content.decode(OrganizationDTO.UpdateName.self)
+        guard let organization = try await Organization.find(update.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        organization.name = create.name
+        organization.name = update.name
         try await organization.update(on: req.db)
-        return create
+        return update
     }
     
-    ///Update org appointment name
+    /// Updates organization appointment places
     func updateAppointmentPlaces(req: Request) async throws -> OrganizationDTO.UpdateAppointmentPlaces {
-        let create = try req.content.decode(OrganizationDTO.UpdateAppointmentPlaces.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let update = try req.content.decode(OrganizationDTO.UpdateAppointmentPlaces.self)
+        guard let organization = try await Organization.find(update.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        organization.appointmentPlaces = create.appointmentPlaces
+        organization.appointmentPlaces = update.appointmentPlaces
         try await organization.update(on: req.db)
-        return create
+        return update
     }
     
-    ///Updates all org mentors
-    func updateMentors(req: Request) async throws -> OrganizationDTO.UpdateMentors {
-        let create = try req.content.decode(OrganizationDTO.UpdateMentors.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+    /// Updates all organization users
+    func updateUsers(req: Request) async throws -> OrganizationDTO.UpdateUsers {
+        let update = try req.content.decode(OrganizationDTO.UpdateUsers.self)
+        guard let organization = try await Organization.find(update.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        organization.mentors = create.mentors
+        organization.users = update.users
         try await organization.update(on: req.db)
-        return create
+        return update
     }
     
-    ///Updates org avaliable mentors
+    /// Updates organization available users
     func updateAvailableMentors(req: Request) async throws -> OrganizationDTO.UpdateAvailableMentors {
-        let create = try req.content.decode(OrganizationDTO.UpdateAvailableMentors.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let update = try req.content.decode(OrganizationDTO.UpdateAvailableMentors.self)
+        guard let organization = try await Organization.find(update.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        organization.availableMentors = create.availableMentors
+        organization.availableMentors = update.availableMentors
         try await organization.update(on: req.db)
-        return create
+        return update
     }
     
+    /// Updates organization queue
     func updateQueue(req: Request) async throws -> OrganizationDTO.UpdateQueue {
-        let create = try req.content.decode(OrganizationDTO.UpdateQueue.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let update = try req.content.decode(OrganizationDTO.UpdateQueue.self)
+        guard let organization = try await Organization.find(update.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        organization.queue = create.queue
+        organization.queue = update.queue
         try await organization.update(on: req.db)
-        return create
+        return update
     }
     
-    ///Add a new appointment to Queue
+    /// Updates organization unschedule queue
+    func updateUnscheduleQueue(req: Request) async throws -> OrganizationDTO.UpdateUnscheduleQueue {
+        let update = try req.content.decode(OrganizationDTO.UpdateUnscheduleQueue.self)
+        guard let organization = try await Organization.find(update.id, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        organization.unscheduleQueue = update.unscheduleQueue
+        try await organization.update(on: req.db)
+        return update
+    }
+    
+    /// Adds a new appointment to queue
     func addAppointmentToQueue(req: Request) async throws -> OrganizationDTO.AddAppointmentToQueue {
-        let create = try req.content.decode(OrganizationDTO.AddAppointmentToQueue.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let add = try req.content.decode(OrganizationDTO.AddAppointmentToQueue.self)
+        guard let organization = try await Organization.find(add.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        organization.queue.append(create.appointment)
+        organization.queue.append(add.appointmentId)
         try await organization.update(on: req.db)
-        return create
+        return add
     }
     
+    /// Adds a new appointment to unschedule queue
     func addAppointmentToUnscheduleQueue(req: Request) async throws -> OrganizationDTO.AddAppointmentToUnscheduleQueue {
-        let create = try req.content.decode(OrganizationDTO.AddAppointmentToUnscheduleQueue.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let add = try req.content.decode(OrganizationDTO.AddAppointmentToUnscheduleQueue.self)
+        guard let organization = try await Organization.find(add.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        organization.unscheduleQueue.append(create.appointment)
+        organization.unscheduleQueue.append(add.appointmentId)
         try await organization.update(on: req.db)
-        return create
+        return add
     }
     
-    ///After the appointment is assigned, removes it from the Queue
+    /// Removes the first appointment from queue
     func removeFirstAppointmentFromQueue(req: Request) async throws -> OrganizationDTO.RemoveFirstAppointmentFromQueue {
-        let create = try req.content.decode(OrganizationDTO.RemoveFirstAppointmentFromQueue.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let remove = try req.content.decode(OrganizationDTO.RemoveFirstAppointmentFromQueue.self)
+        guard let organization = try await Organization.find(remove.id, on: req.db) else {
             throw Abort(.notFound)
         }
         guard !organization.queue.isEmpty else {
@@ -160,12 +202,13 @@ struct OrganizationsController: RouteCollection {
         }
         organization.queue.removeFirst()
         try await organization.update(on: req.db)
-        return create
+        return remove
     }
     
+    /// Removes the first appointment from unschedule queue
     func removeFirstAppointmentFromUnscheduleQueue(req: Request) async throws -> OrganizationDTO.RemoveFirstAppointmentFromUnscheduleQueue {
-        let create = try req.content.decode(OrganizationDTO.RemoveFirstAppointmentFromUnscheduleQueue.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
+        let remove = try req.content.decode(OrganizationDTO.RemoveFirstAppointmentFromUnscheduleQueue.self)
+        guard let organization = try await Organization.find(remove.id, on: req.db) else {
             throw Abort(.notFound)
         }
         guard !organization.unscheduleQueue.isEmpty else {
@@ -173,20 +216,10 @@ struct OrganizationsController: RouteCollection {
         }
         organization.unscheduleQueue.removeFirst()
         try await organization.update(on: req.db)
-        return create
+        return remove
     }
     
-    func updateUnscheduleQueue(req: Request) async throws -> OrganizationDTO.UpdateUnscheduleQueue {
-        let create = try req.content.decode(OrganizationDTO.UpdateUnscheduleQueue.self)
-        guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
-            throw Abort(.notFound)
-        }
-        organization.unscheduleQueue = create.unscheduleQueue
-        try await organization.update(on: req.db)
-        return create
-    }
-    
-    ///deletes the org
+    /// Deletes the organization
     func delete(req: Request) async throws -> HTTPStatus {
         guard let organization = try await Organization.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
@@ -194,5 +227,4 @@ struct OrganizationsController: RouteCollection {
         try await organization.delete(on: req.db)
         return .ok
     }
-    
 }
