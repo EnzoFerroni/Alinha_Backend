@@ -91,7 +91,7 @@ struct OrganizationsController: RouteCollection {
         guard let organization = try await Organization.find(get.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        return OrganizationDTO.GetQueue(queue: organization.queue)
+        return OrganizationDTO.GetQueue(id: <#UUID#>, queue: organization.queue)
     }
     
     /// Fetches the unscheduled appointments queue
@@ -100,7 +100,7 @@ struct OrganizationsController: RouteCollection {
         guard let organization = try await Organization.find(get.id, on: req.db) else {
             throw Abort(.notFound)
         }
-        return OrganizationDTO.GetUnscheduleQueue(unscheduleQueue: organization.unscheduleQueue)
+        return OrganizationDTO.GetUnscheduleQueue(id: <#UUID#>, unscheduleQueue: organization.unscheduleQueue)
     }
     
     /// Updates organization name
