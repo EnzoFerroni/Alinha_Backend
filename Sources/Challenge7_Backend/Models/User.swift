@@ -20,9 +20,8 @@ final class User: Model, @unchecked Sendable, Content{
     @ID(key: .id)
     var id: UUID?
     
-    ///Parent relation to organization
-    @OptionalParent(key: "organization_id")
-    var organization: Organization?
+    @OptionalParent(key: "userOrganization")
+    var userOrganization: UserOrganization?
     
     /*User Atributes*/
     @Field(key: "name")

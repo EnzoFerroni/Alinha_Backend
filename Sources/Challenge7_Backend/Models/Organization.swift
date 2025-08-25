@@ -16,6 +16,9 @@ final class Organization: Model, @unchecked Sendable {
     @Children(for: \.$organization)
     var users: [User]
     
+    @OptionalParent(key: "userOrganizarion")
+    var organizationUser: UserOrganization?
+    
     static let schema = "TB_organizations" // Name that will be on SQL table
     
     @ID(key: .id)
