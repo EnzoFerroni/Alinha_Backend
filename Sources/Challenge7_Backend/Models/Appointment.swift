@@ -16,11 +16,13 @@ final class Appointment: Model, @unchecked Sendable {
     /// Unique identifier for an appointment.
     @ID(key: .id)
     var id: UUID?
+    @Children(for: \.$appointment)
+    var organization: Organization
     /// The mentor associated with the appointment.
-    @Field(key: "mentor_id")
+    @Children(for: \.$appointment)
     var mentor: User
     /// The student associated with the appointment.
-    @Field(key: "student_id")
+    @Children(for: \.$appointment)
     var student: User
     /// The place where the appointment will occur.
     @Field(key: "appointmentPlace")
@@ -58,10 +60,11 @@ final class Appointment: Model, @unchecked Sendable {
     ///    - callStudent: Whether to call the student.
     ///    - isDone: Whether the appointment is done.
     ///    - createdAt: The creation date of the appointment.
-    init(id: UUID? = nil, mentor: User, student: User, appointmentPlace: String, appointmentCategory: UserPath, appointmentType: AppointmentType, isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date) {
+    init(id: UUID? = nil, organization: Organization.IDValue, mentor: User.IDValue, student: User.IDValue, appointmentPlace: String, appointmentCategory: UserPath, appointmentType: AppointmentType, isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date) {
         self.id = id
-        self.mentor = mentor
-        self.student = student
+        self.$organization.id = organization
+        self.$mentor.id = mentor
+        self.$student.id = student
         self.appointmentPlace = appointmentPlace
         self.appointmentCategory = appointmentCategory
         self.isScheduled = false
@@ -75,8 +78,9 @@ final class Appointment: Model, @unchecked Sendable {
     func toDTO() -> AppointmentDTO {
         .init (
             id: self.id,
-            mentor: self.$mentor.value,
-            student: self.$student.value,
+            organization: self.organization.id,
+            mentor: self.mentor.id,
+            student: self.student.id,
             appointmentPlace: self.$appointmentPlace.value,
             appointmentCategory: self.$appointmentCategory.value,
             appointmentType: self.$appointmentType.value,
