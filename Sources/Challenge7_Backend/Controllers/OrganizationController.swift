@@ -6,6 +6,7 @@
 //
 
 import Vapor
+import FluentKit
 
 // MARK: - Organization Controller
 struct OrganizationsController: RouteCollection {
@@ -52,13 +53,16 @@ struct OrganizationsController: RouteCollection {
         try await Organization.query(on: req.db).all().map { $0.toDTO() }
     }
     
-    /// Creates a new organization
+
+   /// Creates a new organization
     /// - Parameter req: HTTP request with organization data
     /// - Returns: Created organization DTO
+    @Sendable
     func create(req: Request) async throws -> OrganizationDTO {
         let createRequest = try req.content.decode(OrganizationDTO.CreateRequest.self)
-        
-        let organization = Organization(
+       
+ 
+          let organization = Organization(
             name: createRequest.name,
             token: generateToken(),
             appointmentPlaces: createRequest.appointmentPlaces ?? [],
@@ -68,8 +72,11 @@ struct OrganizationsController: RouteCollection {
             unscheduleQueue: []
         )
         
-        try await organization.save(on: req.db)
-        return organization.toDTO()
+        try await organizationModel.save(on: req.db)
+        
+        try await UserOrganizationController.create(org: organizationModel, user: organization.first_user_id!, role: .adm, database: req.db)
+        
+        return organization
     }
     
     /// Fetches organization by unique ID (URL parameter)
@@ -279,6 +286,7 @@ struct OrganizationsController: RouteCollection {
         return .noContent
     }
     
+
     // MARK: - Private Methods
     
     /// Generates a random 6-digit token for organization access
@@ -287,4 +295,31 @@ struct OrganizationsController: RouteCollection {
         let characters = "0123456789"
         return String((0..<6).map { _ in characters.randomElement()! })
     }
+
+    func enterOrg(req: Request) async throws -> HTTPStatus{
+        let create = try req.content.decode(UserOrganizationDTO.self)
+        
+
+        guard let organization = try await Organization.find(create.org_id, on: req.db)
+        else {
+            throw Abort(.notFound)
+        }
+        
+        
+        guard let relations = try await UserOrganization.find(create.id, on: req.db)
+        else {
+            throw Abort(.notFound)
+        }
+        
+        guard let user = try await User.find(create.user_id, on: req.db)
+        else{
+            throw Abort(.notFound)
+        }
+        
+        try await UserOrganizationController.create(org: organization, user: user, role: .student, database: req.db)
+        
+        return .ok
+    }
+    
+
 }

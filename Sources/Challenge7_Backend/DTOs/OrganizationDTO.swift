@@ -13,6 +13,7 @@ import Vapor
 struct OrganizationDTO: Content {
     var id: UUID?
     var name: String?
+    var first_user_id: User?
     var token: String?
     var appointmentId: Appointment.IDValue?
     var appointmentPlaces: [String]?

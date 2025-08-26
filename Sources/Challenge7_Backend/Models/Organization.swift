@@ -12,7 +12,14 @@ import Foundation
 // MARK: - Organization Model
 /// Model representing an organization in the system
 final class Organization: Model, @unchecked Sendable {
+
     static let schema = "TB_organizations" // SQL table name
+
+    /*Organization Atributes*/
+    
+    @OptionalParent(key: "userOrganizarion")
+    var organizationUser: UserOrganization?
+
     
     // MARK: - Properties
     
@@ -29,6 +36,12 @@ final class Organization: Model, @unchecked Sendable {
     var appointment: Appointment?
     
     @Field(key: "appointment_places")
+
+    @Field(key: "first_user")
+    var first_id: User
+    
+    @Field(key: "appointmentPlaces")
+
     var appointmentPlaces: [String]
     
     @Field(key: "users")
@@ -43,40 +56,7 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "unschedule_queue")
     var unscheduleQueue: [Appointment.IDValue]
     
-    // MARK: - Initializers
-    
-    /// Empty initializer required by Fluent
-    init() { }
-    
-    /// Complete initializer for Organization
-    /// - Parameters:
-    ///   - id: Organization unique identifier
-    ///   - name: Organization name
-    ///   - token: Access token for organization
-    ///   - appointmentPlaces: Available appointment locations
-    ///   - users: Array of user UUIDs belonging to organization
-    ///   - availableMentors: Array of mentor UUIDs available for appointments
-    ///   - queue: Queue of scheduled appointment UUIDs
-    ///   - unscheduleQueue: Queue of unscheduled appointment UUIDs
-    init(
-        id: UUID? = nil,
-        name: String,
-        token: String,
-        appointmentPlaces: [String],
-        users: [User.IDValue],
-        availableMentors: [User.IDValue],
-        queue: [Appointment.IDValue],
-        unscheduleQueue: [Appointment.IDValue]
-    ) {
-        self.id = id
-        self.name = name
-        self.token = token
-        self.appointmentPlaces = appointmentPlaces
-        self.users = users
-        self.availableMentors = availableMentors
-        self.queue = queue
-        self.unscheduleQueue = unscheduleQueue
-    }
+//TODO:INIT 
     
     // MARK: - Public Methods
     
@@ -86,6 +66,7 @@ final class Organization: Model, @unchecked Sendable {
         .init(
             id: id,
             name: name,
+          first_user_id: first_id,
             token: token,
             appointmentPlaces: appointmentPlaces,
             users: users,
@@ -93,5 +74,6 @@ final class Organization: Model, @unchecked Sendable {
             queue: queue,
             unscheduleQueue: unscheduleQueue
         )
+
     }
 }
