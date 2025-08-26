@@ -17,35 +17,6 @@ struct UserDTO: Content{
     var password: String?
     var role: UserRole?
     var path: UserPath?
-    
-    func toModel() -> User{
-        let model = User()
-        
-        model.id = self.id
-        
-        if let name = self.name{
-            model.name = name
-        }
-        
-        if let email = self.email{
-            model.email = email
-        }
-        
-        if let password = self.password{
-            model.password = password
-        }
-        
-        if let role = self.role{
-            model.role = role
-        }
-        
-        if let path = self.path{
-            model.path = path
-        }
-        
-        return model
-    }
-    
 }
 
 extension UserDTO{
