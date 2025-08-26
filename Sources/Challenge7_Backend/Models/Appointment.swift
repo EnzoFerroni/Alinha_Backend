@@ -16,14 +16,14 @@ final class Appointment: Model, @unchecked Sendable {
     /// Unique identifier for an appointment.
     @ID(key: .id)
     var id: UUID?
-    @Children(for: \.$appointment)
-    var organization: Organization
+    @OptionalChild(for: \.$appointment)
+    var organization: Organization?
     /// The mentor associated with the appointment.
-    @Children(for: \.$appointment)
-    var mentor: User
+    @OptionalChild(for: \.$appointment)
+    var mentor: User?
     /// The student associated with the appointment.
-    @Children(for: \.$appointment)
-    var student: User
+    @OptionalChild(for: \.$appointment)
+    var student: User?
     /// The place where the appointment will occur.
     @Field(key: "appointmentPlace")
     var appointmentPlace: String
