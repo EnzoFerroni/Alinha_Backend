@@ -9,15 +9,19 @@ import Fluent
 import Vapor
 import Foundation
 
-
-//MARK: - Organization Model
+// MARK: - Organization Model
+/// Model representing an organization in the system
 final class Organization: Model, @unchecked Sendable {
+
+    static let schema = "TB_organizations" // SQL table name
+
     /*Organization Atributes*/
     
     @OptionalParent(key: "userOrganizarion")
     var organizationUser: UserOrganization?
+
     
-    static let schema = "TB_organizations" // Name that will be on SQL table
+    // MARK: - Properties
     
     @ID(key: .id)
     var id: UUID?
@@ -28,61 +32,48 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "token")
     var token: String
     
+    @OptionalParent(key: "appointment_id")
+    var appointment: Appointment?
+    
+    @Field(key: "appointment_places")
+
     @Field(key: "first_user")
     var first_id: User
     
     @Field(key: "appointmentPlaces")
+
     var appointmentPlaces: [String]
     
-    @Field(key: "mentors")
-    var mentors: [User]
+    @Field(key: "users")
+    var users: [User.IDValue]
     
-    @Field(key: "availableMentors")
-    var availableMentors: [User]
+    @Field(key: "available_mentors")
+    var availableMentors: [User.IDValue]
     
     @Field(key: "queue")
-    var queue: [Appointment]
+    var queue: [Appointment.IDValue]
     
-    @Field(key: "unscheduleQueue")
-    var unscheduleQueue: [Appointment]
+    @Field(key: "unschedule_queue")
+    var unscheduleQueue: [Appointment.IDValue]
     
+//TODO:INIT 
     
-    init() {}
-    /// Initializes Organization class
-    /// - Parameters:
-    ///   - id: org ID
-    ///   - name: org Name
-    ///   - token: the user will access the org by this token
-    ///   - appointmentPlaces: where the user will be attended
-    ///   - mentors: All org mentors
-    ///   - availableMentors: Mentors that can receeve new appointments
-    ///   - queue: Queue of appointments
-    ///   - unscheduleQueue: queue that does not have a mentor yet
+    // MARK: - Public Methods
     
-    init(organizationUser: UserOrganization? = nil, id: UUID? = nil, name: String, token: String,first_id: User, appointmentPlaces: [String], mentors: [User], availableMentors: [User], queue: [Appointment], unscheduleQueue: [Appointment]) {
-        self.organizationUser = organizationUser
-        self.id = id
-        self.name = name
-        self.token = token
-        self.first_id = first_id
-        self.appointmentPlaces = appointmentPlaces
-        self.mentors = mentors
-        self.availableMentors = availableMentors
-        self.queue = queue
-        self.unscheduleQueue = unscheduleQueue
-    }
-    /// Turns the org into AorganizationDTO
-    /// - Returns: AorganizationDTO
+    /// Converts Organization model to DTO
+    /// - Returns: OrganizationDTO with all model data
     func toDTO() -> OrganizationDTO {
-        return OrganizationDTO(
-            id: self.id,
-            name: self.name,
-            first_user_id: first_id,
-            token: self.token,
-            appointmentPlaces: self.appointmentPlaces,
-            mentors: self.mentors,
-            availableMentors: self.availableMentors,
-            queue: self.queue,
-            unscheduleQueue: self.unscheduleQueue)
+        .init(
+            id: id,
+            name: name,
+          first_user_id: first_id,
+            token: token,
+            appointmentPlaces: appointmentPlaces,
+            users: users,
+            availableMentors: availableMentors,
+            queue: queue,
+            unscheduleQueue: unscheduleQueue
+        )
+
     }
 }

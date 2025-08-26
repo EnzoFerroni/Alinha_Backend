@@ -5,30 +5,32 @@
 //  Created by Enzo Ferroni on 20/08/25.
 //
 
-
 import Fluent
 
+// MARK: - Organization Migration
 struct OrganizationMigration: AsyncMigration {
     
-    ///  Make a change to the database.
-    /// - Parameter database: where the data is stored
+    // MARK: - Public Methods
+    
+    /// Creates the organization table in the database
+    /// - Parameter database: Database connection where the table will be created
     func prepare(on database: any Database) async throws {
         try await database.schema("TB_organizations")
             .id()
             .field("name", .string, .required)
             .field("token", .string, .required)
-            .field("appointmentPlaces", .array(of: .string), .required)
-            .field("mentors", .array(of: .string), .required)
-            .field("availableMentors", .array(of: .string), .required)
-            .field("queue", .array(of: .string), .required)
-            .field("unscheduleQueue", .array(of: .string), .required)
-        
+            .field("appointment_places", .array(of: .string), .required)
+            .field("users", .array(of: .uuid), .required)
+            .field("available_mentors", .array(of: .uuid), .required)
+            .field("queue", .array(of: .uuid), .required)
+            .field("unschedule_queue", .array(of: .uuid), .required)
             .unique(on: "token")
             .create()
     }
-        ///Undo the change
-        func revert(on database: any Database) async throws {
-            try await database.schema("TB_organizations").delete()
-        }
-
+    
+    /// Removes the organization table from the database
+    /// - Parameter database: Database connection where the table will be removed
+    func revert(on database: any Database) async throws {
+        try await database.schema("TB_organizations").delete()
+    }
 }
