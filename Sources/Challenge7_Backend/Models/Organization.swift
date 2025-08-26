@@ -32,16 +32,16 @@ final class Organization: Model, @unchecked Sendable {
     var appointmentPlaces: [String]
     
     @Field(key: "users")
-    var users: [UUID]
+    var users: [User.IDValue]
     
     @Field(key: "available_mentors")
-    var availableMentors: [UUID]
+    var availableMentors: [User.IDValue]
     
     @Field(key: "queue")
-    var queue: [UUID]
+    var queue: [Appointment.IDValue]
     
     @Field(key: "unschedule_queue")
-    var unscheduleQueue: [UUID]
+    var unscheduleQueue: [Appointment.IDValue]
     
     // MARK: - Initializers
     
@@ -63,10 +63,10 @@ final class Organization: Model, @unchecked Sendable {
         name: String,
         token: String,
         appointmentPlaces: [String],
-        users: [UUID],
-        availableMentors: [UUID],
-        queue: [UUID],
-        unscheduleQueue: [UUID]
+        users: [User.IDValue],
+        availableMentors: [User.IDValue],
+        queue: [Appointment.IDValue],
+        unscheduleQueue: [Appointment.IDValue]
     ) {
         self.id = id
         self.name = name

@@ -14,11 +14,12 @@ struct OrganizationDTO: Content {
     var id: UUID?
     var name: String?
     var token: String?
+    var appointmentId: Appointment.IDValue?
     var appointmentPlaces: [String]?
-    var users: [UUID]?
-    var availableMentors: [UUID]?
-    var queue: [UUID]?
-    var unscheduleQueue: [UUID]?
+    var users: [User.IDValue]?
+    var availableMentors: [User.IDValue]?
+    var queue: [Appointment.IDValue]?
+    var unscheduleQueue: [Appointment.IDValue]?
 }
 
 // MARK: - Request DTOs
@@ -37,8 +38,8 @@ extension OrganizationDTO {
     struct CreateRequest: Content {
         var name: String
         var appointmentPlaces: [String]?
-        var users: [UUID]?
-        var availableMentors: [UUID]?
+        var users: [User.IDValue]?
+        var availableMentors: [User.IDValue]?
     }
     
     /// DTO for updating organization name
@@ -56,25 +57,25 @@ extension OrganizationDTO {
     /// DTO for updating organization users
     struct UpdateUsersRequest: Content {
         var id: UUID
-        var users: [UUID]
+        var users: [User.IDValue]
     }
     
     /// DTO for updating available mentors
     struct UpdateAvailableMentorsRequest: Content {
         var id: UUID
-        var availableMentors: [UUID]
+        var availableMentors: [User.IDValue]
     }
     
     /// DTO for adding appointment to queue
     struct AddAppointmentToQueueRequest: Content {
         var id: UUID
-        var appointmentId: UUID
+        var appointmentId: Appointment.IDValue
     }
     
     /// DTO for adding appointment to unschedule queue
     struct AddAppointmentToUnscheduleQueueRequest: Content {
         var id: UUID
-        var appointmentId: UUID
+        var appointmentId: Appointment.IDValue
     }
     
     /// DTO for removing appointment from queue (only needs org ID)
@@ -88,13 +89,13 @@ extension OrganizationDTO {
     /// Response DTO for queue operations
     struct QueueResponse: Content {
         var id: UUID
-        var queue: [UUID]
+        var queue: [Appointment.IDValue]
     }
     
     /// Response DTO for unschedule queue operations
     struct UnscheduleQueueResponse: Content {
         var id: UUID
-        var unscheduleQueue: [UUID]
+        var unscheduleQueue: [Appointment.IDValue]
     }
     
     /// Response DTO for appointment places
