@@ -14,7 +14,7 @@ class UserOrganizationController{
     }
     
     
-    func create(org: Organization, user: User, role: UserRole, database: any Database) async throws{
+    static func create(org: Organization, user: User, role: UserRole, database: any Database) async throws{
         
         let userOrg = UserOrganization(
             org_id: org,
