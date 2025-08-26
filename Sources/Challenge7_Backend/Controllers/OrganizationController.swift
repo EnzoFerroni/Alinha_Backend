@@ -42,7 +42,8 @@ struct OrganizationsController: RouteCollection {
     }
     
     ///Creates an organization
-    func create(req: Request, user: User) async throws -> OrganizationDTO {
+    @Sendable
+    func create(req: Request) async throws -> OrganizationDTO {
         var UserOrganization = UserOrganizationController()
         
         let organization = try req.content.decode(OrganizationDTO.self)
@@ -50,6 +51,7 @@ struct OrganizationsController: RouteCollection {
         let organizationModel = Organization(
             name: organization.name!,
             token: organization.token!,
+            first_id: organization.first_user_id!,
             appointmentPlaces: organization.appointmentPlaces!,
             mentors: organization.mentors!,
             availableMentors: organization.availableMentors!,
@@ -57,9 +59,11 @@ struct OrganizationsController: RouteCollection {
             unscheduleQueue: organization.unscheduleQueue!
         )
         
+        try await UserOrganization.create(org: organizationModel, user: organization.first_user_id!, role: .adm, database: req.db)
+        
         try await organizationModel.save(on: req.db)
         
-        try await UserOrganization.create(org: organizationModel, user: user, role: .adm, database: req.db)
+        //try await UserOrganization.create(org: organizationModel, user: user, role: .adm, database: req.db)
         
         return organization
     }
