@@ -6,6 +6,7 @@
 //
 
 import Vapor
+import FluentKit
 
 struct OrganizationsController: RouteCollection {
     /// initializes all gates
@@ -41,10 +42,26 @@ struct OrganizationsController: RouteCollection {
     }
     
     ///Creates an organization
+    @Sendable
     func create(req: Request) async throws -> OrganizationDTO {
+
         let organization = try req.content.decode(OrganizationDTO.self)
-        let organizationModel = organization.toModel()
+        
+        let organizationModel = Organization(
+            name: organization.name!,
+            token: organization.token!,
+            first_id: organization.first_user_id!,
+            appointmentPlaces: organization.appointmentPlaces!,
+            mentors: organization.mentors!,
+            availableMentors: organization.availableMentors!,
+            queue: organization.queue!,
+            unscheduleQueue: organization.unscheduleQueue!
+        )
+        
         try await organizationModel.save(on: req.db)
+        
+        try await UserOrganizationController.create(org: organizationModel, user: organization.first_user_id!, role: .adm, database: req.db)
+        
         return organization
     }
     
@@ -192,6 +209,31 @@ struct OrganizationsController: RouteCollection {
             throw Abort(.notFound)
         }
         try await organization.delete(on: req.db)
+        return .ok
+    }
+    
+    func enterOrg(req: Request) async throws -> HTTPStatus{
+        let create = try req.content.decode(UserOrganizationDTO.self)
+        
+
+        guard let organization = try await Organization.find(create.org_id, on: req.db)
+        else {
+            throw Abort(.notFound)
+        }
+        
+        
+        guard let relations = try await UserOrganization.find(create.id, on: req.db)
+        else {
+            throw Abort(.notFound)
+        }
+        
+        guard let user = try await User.find(create.user_id, on: req.db)
+        else{
+            throw Abort(.notFound)
+        }
+        
+        try await UserOrganizationController.create(org: organization, user: user, role: .student, database: req.db)
+        
         return .ok
     }
     
