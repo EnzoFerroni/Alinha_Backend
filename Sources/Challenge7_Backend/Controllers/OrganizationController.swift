@@ -65,18 +65,19 @@ struct OrganizationsController: RouteCollection {
           let organization = Organization(
             name: createRequest.name,
             token: generateToken(),
-            appointmentPlaces: createRequest.appointmentPlaces ?? [],
+            appointment_places: createRequest.appointmentPlaces ?? [],
+            first_id: createRequest.first_user_id!,
             users: createRequest.users ?? [],
             availableMentors: createRequest.availableMentors ?? [],
             queue: [],
             unscheduleQueue: []
         )
         
-        try await organizationModel.save(on: req.db)
+        try await organization.save(on: req.db)
         
-        try await UserOrganizationController.create(org: organizationModel, user: organization.first_user_id!, role: .adm, database: req.db)
+        try await UserOrganizationController.create(org: organization, user: createRequest.first_user_id!, role: .adm, database: req.db)
         
-        return organization
+        return organization.toDTO()
     }
     
     /// Fetches organization by unique ID (URL parameter)
@@ -139,7 +140,7 @@ struct OrganizationsController: RouteCollection {
             throw Abort(.notFound, reason: "Organization not found")
         }
         
-        return OrganizationDTO.AppointmentPlacesResponse(id: organization.id!, appointmentPlaces: organization.appointmentPlaces)
+        return OrganizationDTO.AppointmentPlacesResponse(id: organization.id!, appointment_places: organization.appointment_places)
     }
     
     /// Updates organization name
@@ -167,9 +168,10 @@ struct OrganizationsController: RouteCollection {
             throw Abort(.notFound, reason: "Organization not found")
         }
         
-        organization.appointmentPlaces = updateRequest.appointmentPlaces
+        organization.appointment_places = updateRequest.appointment_places
         try await organization.update(on: req.db)
-        return organization.toDTO()
+        return organization
+            .toDTO()
     }
     
     /// Updates organization users
@@ -286,16 +288,6 @@ struct OrganizationsController: RouteCollection {
         return .noContent
     }
     
-
-    // MARK: - Private Methods
-    
-    /// Generates a random 6-digit token for organization access
-    /// - Returns: 6-digit numeric string
-    private func generateToken() -> String {
-        let characters = "0123456789"
-        return String((0..<6).map { _ in characters.randomElement()! })
-    }
-
     func enterOrg(req: Request) async throws -> HTTPStatus{
         let create = try req.content.decode(UserOrganizationDTO.self)
         
@@ -321,5 +313,12 @@ struct OrganizationsController: RouteCollection {
         return .ok
     }
     
-
+    // MARK: - Private Methods
+    
+    /// Generates a random 6-digit token for organization access
+    /// - Returns: 6-digit numeric string
+    private func generateToken() -> String {
+        let characters = "0123456789"
+        return String((0..<6).map { _ in characters.randomElement()! })
+    }
 }

@@ -16,7 +16,7 @@ struct OrganizationDTO: Content {
     var first_user_id: User?
     var token: String?
     var appointmentId: Appointment.IDValue?
-    var appointmentPlaces: [String]?
+    var appointment_places: [String]?
     var users: [User.IDValue]?
     var availableMentors: [User.IDValue]?
     var queue: [Appointment.IDValue]?
@@ -40,6 +40,7 @@ extension OrganizationDTO {
         var name: String
         var appointmentPlaces: [String]?
         var users: [User.IDValue]?
+        var first_user_id: User?
         var availableMentors: [User.IDValue]?
     }
     
@@ -52,7 +53,7 @@ extension OrganizationDTO {
     /// DTO for updating appointment places
     struct UpdateAppointmentPlacesRequest: Content {
         var id: UUID
-        var appointmentPlaces: [String]
+        var appointment_places: [String]
     }
     
     /// DTO for updating organization users
@@ -102,6 +103,6 @@ extension OrganizationDTO {
     /// Response DTO for appointment places
     struct AppointmentPlacesResponse: Content {
         var id: UUID
-        var appointmentPlaces: [String]
+        var appointment_places: [String]
     }
 }

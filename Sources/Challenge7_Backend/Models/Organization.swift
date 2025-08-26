@@ -36,13 +36,10 @@ final class Organization: Model, @unchecked Sendable {
     var appointment: Appointment?
     
     @Field(key: "appointment_places")
+    var appointment_places: [String]
 
     @Field(key: "first_user")
     var first_id: User
-    
-    @Field(key: "appointmentPlaces")
-
-    var appointmentPlaces: [String]
     
     @Field(key: "users")
     var users: [User.IDValue]
@@ -56,7 +53,21 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "unschedule_queue")
     var unscheduleQueue: [Appointment.IDValue]
     
-//TODO:INIT 
+    
+    init() {}
+    init(organizationUser: UserOrganization? = nil, id: UUID? = nil, name: String, token: String, appointment: Appointment? = nil, appointment_places: [String], first_id: User, users: [User.IDValue], availableMentors: [User.IDValue], queue: [Appointment.IDValue], unscheduleQueue: [Appointment.IDValue]) {
+        self.organizationUser = organizationUser
+        self.id = id
+        self.name = name
+        self.token = token
+        self.appointment = appointment
+        self.appointment_places = appointment_places
+        self.first_id = first_id
+        self.users = users
+        self.availableMentors = availableMentors
+        self.queue = queue
+        self.unscheduleQueue = unscheduleQueue
+    }
     
     // MARK: - Public Methods
     
@@ -66,9 +77,9 @@ final class Organization: Model, @unchecked Sendable {
         .init(
             id: id,
             name: name,
-          first_user_id: first_id,
+            first_user_id: first_id,
             token: token,
-            appointmentPlaces: appointmentPlaces,
+            appointment_places: appointment_places,
             users: users,
             availableMentors: availableMentors,
             queue: queue,
