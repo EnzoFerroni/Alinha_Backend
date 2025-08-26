@@ -13,8 +13,6 @@ import Foundation
 //MARK: - Organization Model
 final class Organization: Model, @unchecked Sendable {
     /*Organization Atributes*/
-    @Children(for: \.$organization)
-    var users: [User]
     
     @OptionalParent(key: "userOrganizarion")
     var organizationUser: UserOrganization?

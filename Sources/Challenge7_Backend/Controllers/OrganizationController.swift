@@ -6,6 +6,7 @@
 //
 
 import Vapor
+import FluentKit
 
 struct OrganizationsController: RouteCollection {
     /// initializes all gates
@@ -41,10 +42,25 @@ struct OrganizationsController: RouteCollection {
     }
     
     ///Creates an organization
-    func create(req: Request) async throws -> OrganizationDTO {
+    func create(req: Request, user: User) async throws -> OrganizationDTO {
+        var UserOrganization = UserOrganizationController()
+        
         let organization = try req.content.decode(OrganizationDTO.self)
-        let organizationModel = organization.toModel()
+        
+        let organizationModel = Organization(
+            name: organization.name!,
+            token: organization.token!,
+            appointmentPlaces: organization.appointmentPlaces!,
+            mentors: organization.mentors!,
+            availableMentors: organization.availableMentors!,
+            queue: organization.queue!,
+            unscheduleQueue: organization.unscheduleQueue!
+        )
+        
         try await organizationModel.save(on: req.db)
+        
+        try await UserOrganization.create(org: organizationModel, user: user, role: .adm, database: req.db)
+        
         return organization
     }
     

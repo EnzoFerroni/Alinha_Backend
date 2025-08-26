@@ -14,7 +14,7 @@ class UserOrganizationController{
     }
     
     
-    func create(org: Organization, user: User, role: UserRole, database: Database) async throws -> UserOrganization {
+    func create(org: Organization, user: User, role: UserRole, database: any Database) async throws{
         
         let userOrg = UserOrganization(
             org_id: org,
@@ -23,7 +23,6 @@ class UserOrganizationController{
         )
         
         try await userOrg.save(on: database)
-        return userOrg
     }
     
     func show(req: Request) async throws -> UserOrganizationDTO {
