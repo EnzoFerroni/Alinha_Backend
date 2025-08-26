@@ -25,6 +25,9 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "token")
     var token: String
     
+    @OptionalParent(key: "appointment_id")
+    var appointment: Appointment?
+    
     @Field(key: "appointment_places")
     var appointmentPlaces: [String]
     
