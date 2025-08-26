@@ -9,10 +9,12 @@ import Fluent
 import Vapor
 import Foundation
 
-
-//MARK: - Organization Model
+// MARK: - Organization Model
+/// Model representing an organization in the system
 final class Organization: Model, @unchecked Sendable {
-    static let schema = "TB_organizations" // Name that will be on SQL table
+    static let schema = "TB_organizations" // SQL table name
+    
+    // MARK: - Properties
     
     @ID(key: .id)
     var id: UUID?
@@ -38,19 +40,31 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "unschedule_queue")
     var unscheduleQueue: [UUID]
     
+    // MARK: - Initializers
+    
+    /// Empty initializer required by Fluent
     init() { }
     
-    /// Initializes Organization class
+    /// Complete initializer for Organization
     /// - Parameters:
-    ///   - id: org ID
-    ///   - name: org Name
-    ///   - token: the user will access the org by this token
-    ///   - appointmentPlaces: where the user will be attended
-    ///   - users: All org users UUIDs
-    ///   - availableMentors: Mentors that can receive new appointments UUIDs
-    ///   - queue: Queue of appointment UUIDs
-    ///   - unscheduleQueue: queue that does not have a mentor yet UUIDs
-    init(id: UUID? = nil, name: String, token: String, appointmentPlaces: [String], users: [UUID], availableMentors: [UUID], queue: [UUID], unscheduleQueue: [UUID]) {
+    ///   - id: Organization unique identifier
+    ///   - name: Organization name
+    ///   - token: Access token for organization
+    ///   - appointmentPlaces: Available appointment locations
+    ///   - users: Array of user UUIDs belonging to organization
+    ///   - availableMentors: Array of mentor UUIDs available for appointments
+    ///   - queue: Queue of scheduled appointment UUIDs
+    ///   - unscheduleQueue: Queue of unscheduled appointment UUIDs
+    init(
+        id: UUID? = nil,
+        name: String,
+        token: String,
+        appointmentPlaces: [String],
+        users: [UUID],
+        availableMentors: [UUID],
+        queue: [UUID],
+        unscheduleQueue: [UUID]
+    ) {
         self.id = id
         self.name = name
         self.token = token
@@ -61,16 +75,20 @@ final class Organization: Model, @unchecked Sendable {
         self.unscheduleQueue = unscheduleQueue
     }
     
-    /// Turns the org into OrganizationDTO
-    /// - Returns: OrganizationDTO
+    // MARK: - Public Methods
+    
+    /// Converts Organization model to DTO
+    /// - Returns: OrganizationDTO with all model data
     func toDTO() -> OrganizationDTO {
-        .init(id: id,
-              name: name,
-              token: token,
-              appointmentPlaces: appointmentPlaces,
-              users: users,
-                availableMentors: availableMentors,
-                queue: queue,
-                unscheduleQueue: unscheduleQueue)
+        .init(
+            id: id,
+            name: name,
+            token: token,
+            appointmentPlaces: appointmentPlaces,
+            users: users,
+            availableMentors: availableMentors,
+            queue: queue,
+            unscheduleQueue: unscheduleQueue
+        )
     }
 }

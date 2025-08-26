@@ -8,9 +8,9 @@
 import Fluent
 import Vapor
 
-/// A DTO is a type that represents what a client should send or receive.
+// MARK: - Main Organization DTO
+/// Main DTO representing organization data for API responses
 struct OrganizationDTO: Content {
-    /// Org Attributes
     var id: UUID?
     var name: String?
     var token: String?
@@ -19,76 +19,86 @@ struct OrganizationDTO: Content {
     var availableMentors: [UUID]?
     var queue: [UUID]?
     var unscheduleQueue: [UUID]?
-
 }
 
-/// Updates the organization attributes
+// MARK: - Request DTOs
 extension OrganizationDTO {
-    struct UpdateName: Content {
+    /// DTO for getting organization by ID
+    struct GetByIdRequest: Content {
+        var id: UUID
+    }
+    
+    /// DTO for getting organization by token
+    struct GetByTokenRequest: Content {
+        var token: String
+    }
+    
+    /// DTO for creating new organization
+    struct CreateRequest: Content {
+        var name: String
+        var appointmentPlaces: [String]?
+        var users: [UUID]?
+        var availableMentors: [UUID]?
+    }
+    
+    /// DTO for updating organization name
+    struct UpdateNameRequest: Content {
         var id: UUID
         var name: String
     }
     
-    struct UpdateAppointmentPlaces: Content {
+    /// DTO for updating appointment places
+    struct UpdateAppointmentPlacesRequest: Content {
         var id: UUID
         var appointmentPlaces: [String]
     }
     
-    struct UpdateUsers: Content {
+    /// DTO for updating organization users
+    struct UpdateUsersRequest: Content {
         var id: UUID
         var users: [UUID]
     }
     
-    struct UpdateAvailableMentors: Content {
+    /// DTO for updating available mentors
+    struct UpdateAvailableMentorsRequest: Content {
         var id: UUID
         var availableMentors: [UUID]
     }
     
-    struct UpdateQueue: Content {
+    /// DTO for adding appointment to queue
+    struct AddAppointmentToQueueRequest: Content {
+        var id: UUID
+        var appointmentId: UUID
+    }
+    
+    /// DTO for adding appointment to unschedule queue
+    struct AddAppointmentToUnscheduleQueueRequest: Content {
+        var id: UUID
+        var appointmentId: UUID
+    }
+    
+    /// DTO for removing appointment from queue (only needs org ID)
+    struct RemoveFromQueueRequest: Content {
+        var id: UUID
+    }
+}
+
+// MARK: - Response DTOs
+extension OrganizationDTO {
+    /// Response DTO for queue operations
+    struct QueueResponse: Content {
         var id: UUID
         var queue: [UUID]
     }
     
-    struct UpdateUnscheduleQueue: Content {
+    /// Response DTO for unschedule queue operations
+    struct UnscheduleQueueResponse: Content {
         var id: UUID
         var unscheduleQueue: [UUID]
     }
     
-    struct GetQueue: Content {
-        var id: UUID
-        var queue: [UUID]
-    }
-    
-    struct GetUnscheduleQueue: Content {
-        var id: UUID
-        var unscheduleQueue: [UUID]
-    }
-    
-    struct AddAppointmentToQueue: Content {
-        var id: UUID
-        var appointmentId: UUID
-    }
-    
-    struct AddAppointmentToUnscheduleQueue: Content {
-        var id: UUID
-        var appointmentId: UUID
-    }
-    
-    struct RemoveFirstAppointmentFromQueue: Content {
-        var id: UUID
-        var appointmentId: UUID
-    }
-    
-    struct RemoveFirstAppointmentFromUnscheduleQueue: Content {
-        var id: UUID
-        var appointmentId: UUID
-    }
-    
-    struct GetOrganizationByToken: Content {
-        var token: String
-    }
-    
-    struct GetAppointmentPlaces: Content {
+    /// Response DTO for appointment places
+    struct AppointmentPlacesResponse: Content {
         var id: UUID
         var appointmentPlaces: [String]
     }
