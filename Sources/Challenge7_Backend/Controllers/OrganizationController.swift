@@ -55,16 +55,16 @@ struct OrganizationsController: RouteCollection {
         try await Organization.query(on: req.db).all().map { $0.toDTO() }
     }
     
-
-   /// Creates a new organization
+    
+    /// Creates a new organization
     /// - Parameter req: HTTP request with organization data
     /// - Returns: Created organization DTO
     @Sendable
     func create(req: Request) async throws -> OrganizationDTO {
         let createRequest = try req.content.decode(OrganizationDTO.CreateRequest.self)
-       
- 
-          let organization = Organization(
+        
+        
+        let organization = Organization(
             name: createRequest.name,
             token: generateToken(),
             appointment_places: createRequest.appointmentPlaces ?? [],
@@ -293,7 +293,7 @@ struct OrganizationsController: RouteCollection {
     func enterOrg(req: Request) async throws -> HTTPStatus{
         let create = try req.content.decode(UserOrganizationDTO.self)
         
-
+        
         guard let organization = try await Organization.find(create.org_id, on: req.db)
         else {
             throw Abort(.notFound)
@@ -323,11 +323,11 @@ struct OrganizationsController: RouteCollection {
               let userID = UUID(uuidString: userIDStr) else {
             throw Abort(.badRequest, reason: "Missing or invalid orgID/userID")
         }
-
+        
         // Decode minimal body (only the new role)
         struct UpdateRoleBody: Content { let user_role: UserRole }
         let body = try req.content.decode(UpdateRoleBody.self)
-
+        
         // Find the relation for (orgID, userID)
         guard let relation = try await UserOrganization.query(on: req.db)
             .filter(\UserOrganization.$organization.$id == orgID)
@@ -335,7 +335,7 @@ struct OrganizationsController: RouteCollection {
             .first() else {
             throw Abort(.notFound, reason: "relation not found for given org and user")
         }
-
+        
         // Update role
         relation.user_role = body.user_role
         try await relation.update(on: req.db)

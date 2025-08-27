@@ -12,6 +12,8 @@ import Foundation
 // MARK: - Organization Model
 /// Model representing an organization in the system
 final class Organization: Model, @unchecked Sendable {
+    
+    
 
     static let schema = "TB_organizations" // SQL table name
 
@@ -53,10 +55,20 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "unschedule_queue")
     var unscheduleQueue: [Appointment.IDValue]
     
-    
     init() {}
-    init(members: [UserOrganization], id: UUID? = nil, name: String, token: String, appointment: Appointment? = nil, appointment_places: [String], first_id: User, users: [User.IDValue], availableMentors: [User.IDValue], queue: [Appointment.IDValue], unscheduleQueue: [Appointment.IDValue]) {
-        self.members = members
+    
+    init(
+        id: UUID? = nil,
+        name: String,
+        token: String,
+        appointment: Appointment? = nil,
+        appointment_places: [String],
+        first_id: User,
+        users: [User.IDValue],
+        availableMentors: [User.IDValue],
+        queue: [Appointment.IDValue],
+        unscheduleQueue: [Appointment.IDValue]
+    ) {
         self.id = id
         self.name = name
         self.token = token
