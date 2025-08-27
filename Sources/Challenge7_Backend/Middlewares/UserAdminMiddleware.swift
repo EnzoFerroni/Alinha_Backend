@@ -13,8 +13,7 @@ struct UserAdminMiddleware: AsyncMiddleware {
               let orgID = UUID(uuidString: orgIDStr) else {
             throw Abort(.badRequest, reason: "Missing or invalid orgID")
         }
-
-       
+  
         let qb: QueryBuilder<UserOrganization> = UserOrganization.query(on: req.db)
 
         let actorID = try actor.requireID()

@@ -16,9 +16,12 @@ class UserOrganizationController{
     
     static func create(org: Organization, user: User, role: UserRole, database: any Database) async throws{
         
+        let orgID = try org.requireID()
+        let userID = try user.requireID()
+
         let userOrg = UserOrganization(
-            org_id: org,
-            user_id: user,
+            orgID: orgID,
+            userID: userID,
             user_role: role
         )
         

@@ -17,6 +17,7 @@ struct OrganizationsController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let organizations = routes.grouped("organizations")
         let guarded = organizations.grouped(UserAdminMiddleware())
+        
         let members = guarded.grouped(":orgID", "users")
         // GET routes
         organizations.get(use: index)
