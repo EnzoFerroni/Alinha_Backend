@@ -19,6 +19,7 @@ final class Organization: Model, @unchecked Sendable {
 
     /*Organization Atributes*/
     
+
     @Children(for: \.$organization)
     var members: [UserOrganization]
 
@@ -34,7 +35,7 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "token")
     var token: String
     
-    @OptionalParent(key: "appointment_id")
+    @OptionalChild(for: \.$organization)
     var appointment: Appointment?
     
     @Field(key: "appointment_places")
