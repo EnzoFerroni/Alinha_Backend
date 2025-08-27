@@ -19,6 +19,8 @@ struct OrganizationsController: RouteCollection {
         let guarded = organizations.grouped(UserAdminMiddleware())
         
         let members = guarded.grouped(":orgID", "users")
+        // Register admin-only org deletion route
+        guarded.delete(":orgID", use: admDeleteOrg)
         // GET routes
         organizations.get(use: index)
         organizations.get("getByToken", use: getByToken)
@@ -38,7 +40,11 @@ struct OrganizationsController: RouteCollection {
         organizations.patch("addAppointmentToUnscheduleQueue", use: addAppointmentToUnscheduleQueue)
         organizations.patch("removeFirstAppointmentFromQueue", use: removeFirstAppointmentFromQueue)
         organizations.patch("removeFirstAppointmentFromUnscheduleQueue", use: removeFirstAppointmentFromUnscheduleQueue)
+        
+        //Routes only for admin
         members.patch(":userID", "role", use: updateRole)
+        members.get(":userID", use: adminShowUser)
+        members.delete(":userID", use: adminDeleteUser)
         
         // Routes with ID in URL
         organizations.group(":id") { organization in
@@ -316,6 +322,46 @@ struct OrganizationsController: RouteCollection {
         return .ok
     }
     
+    //MARK: - ADM FUNCTIONS
+    
+    //MARK: ADM -> ORG
+    
+    func admDeleteOrg(req: Request) async throws -> HTTPStatus {
+        // Read orgID from path
+        guard let orgIDStr = req.parameters.get("orgID"),
+              let orgID = UUID(uuidString: orgIDStr) else {
+            throw Abort(.badRequest, reason: "Missing or invalid orgID")
+        }
+
+        // Execute as a single transaction for consistency
+        return try await req.db.transaction { db in
+            // Find organization
+            guard let organization = try await Organization.find(orgID, on: db) else {
+                throw Abort(.notFound, reason: "Organization not found")
+            }
+
+            // Find all memberships for this organization
+            let memberships = try await UserOrganization.query(on: db)
+                .filter(\UserOrganization.$organization.$id == orgID)
+                .all()
+
+            // Collect user ID
+            let userIDs = memberships.map { $0.$user.id }
+
+            // Delete memberships
+            for m in memberships {
+                try await m.delete(on: db)
+            }
+
+            // Delete organization
+            try await organization.delete(on: db)
+            return .noContent
+        }
+    }
+    
+    //MARK: ADM -> USER
+    
+    ///Updates the user role in the org
     func updateRole(req: Request) async throws -> UserOrganizationDTO {
         // Read path params
         guard let orgIDStr = req.parameters.get("orgID"),
@@ -343,7 +389,43 @@ struct OrganizationsController: RouteCollection {
         return relation.toDTO()
     }
     
+    /// Admin can see a user's profile.
+    /// Fetches UserOrganization relation by orgID/userID from path, returns target UserDTO.
+    func adminShowUser(req: Request) async throws -> UserDTO {
+        let (_, target) = try await findUser(req)
+        return target.toDTO()
+    }
+    
+    /// Admin can remove a user's membership from the organization.
+    /// Deletes the UserOrganization relation for the given orgID/userID path params.
+    func adminDeleteUser(req: Request) async throws -> HTTPStatus {
+        let (relation, _) = try await findUser(req)
+        try await relation.delete(on: req.db)
+        return .noContent
+    }
+    
     // MARK: - Private Methods
+    
+    /// Finds the UserOrganization relation and target User by orgID/userID path params.
+    /// Returns (UserOrganization, User). Throws if not found.
+    private func findUser(_ req: Request) async throws -> (UserOrganization, User) {
+        guard let orgIDStr = req.parameters.get("orgID"),
+              let orgID = UUID(uuidString: orgIDStr),
+              let userIDStr = req.parameters.get("userID"),
+              let userID = UUID(uuidString: userIDStr) else {
+            throw Abort(.badRequest, reason: "Missing or invalid orgID/userID")
+        }
+
+        guard let relation = try await UserOrganization.query(on: req.db)
+            .filter(\UserOrganization.$organization.$id == orgID)
+            .filter(\UserOrganization.$user.$id == userID)
+            .first() else {
+            throw Abort(.notFound, reason: "Membership not found for given org and user")
+        }
+
+        let target = try await relation.$user.get(on: req.db)
+        return (relation, target)
+    }
     
     /// Generates a random 6-digit token for organization access
     /// - Returns: 6-digit numeric string
