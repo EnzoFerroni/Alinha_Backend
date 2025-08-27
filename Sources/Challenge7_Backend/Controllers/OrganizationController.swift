@@ -44,6 +44,7 @@ struct OrganizationsController: RouteCollection {
         members.patch(":userID", "role", use: updateRole)
         members.get(":userID", use: adminShowUser)
         members.delete(":userID", use: adminDeleteUser)
+        members.patch(":userID", "path", use: adminUpdateUserPath) 
         
         // Routes with ID in URL
         organizations.group(":id") { organization in
@@ -347,6 +348,25 @@ struct OrganizationsController: RouteCollection {
     }
     
     //MARK: ADM -> USER
+    
+    /// Admin updates a user's path within an organization
+    /// Endpoint: PATCH /organizations/:orgID/users/:userID/path
+    /// Body: { "path": UserPath }
+    func adminUpdateUserPath(req: Request) async throws -> UserDTO {
+        // Resolve membership and target user using existing helper
+        let (_, target) = try await findUser(req)
+
+        // Minimal body to update path
+        struct UpdatePathBody: Content { let path: UserPath }
+        let body = try req.content.decode(UpdatePathBody.self)
+
+        // Update and persist
+        target.path = body.path
+        try await target.update(on: req.db)
+
+        // Return updated DTO
+        return target.toDTO()
+    }
     
     ///Updates the user role in the org
     func updateRole(req: Request) async throws -> UserOrganizationDTO {
