@@ -19,6 +19,8 @@ struct OrganizationsController: RouteCollection {
         let guarded = organizations.grouped(UserAdminMiddleware())
         
         let members = guarded.grouped(":orgID", "users")
+        // Register admin-only org deletion route
+        guarded.delete(":orgID", use: admDeleteOrg)
         // GET routes
         organizations.get(use: index)
         organizations.post("getByToken", use: getByToken)
@@ -322,7 +324,42 @@ struct OrganizationsController: RouteCollection {
     
     //MARK: - ADM FUNCTIONS
     
-    //MARK: USER -> ADM
+    //MARK: ADM -> ORG
+    
+    func admDeleteOrg(req: Request) async throws -> HTTPStatus {
+        // Read orgID from path
+        guard let orgIDStr = req.parameters.get("orgID"),
+              let orgID = UUID(uuidString: orgIDStr) else {
+            throw Abort(.badRequest, reason: "Missing or invalid orgID")
+        }
+
+        // Execute as a single transaction for consistency
+        return try await req.db.transaction { db in
+            // Find organization
+            guard let organization = try await Organization.find(orgID, on: db) else {
+                throw Abort(.notFound, reason: "Organization not found")
+            }
+
+            // Find all memberships for this organization
+            let memberships = try await UserOrganization.query(on: db)
+                .filter(\UserOrganization.$organization.$id == orgID)
+                .all()
+
+            // Collect user ID
+            let userIDs = memberships.map { $0.$user.id }
+
+            // Delete memberships
+            for m in memberships {
+                try await m.delete(on: db)
+            }
+
+            // Delete organization
+            try await organization.delete(on: db)
+            return .noContent
+        }
+    }
+    
+    //MARK: ADM -> USER
     
     ///Updates the user role in the org
     func updateRole(req: Request) async throws -> UserOrganizationDTO {
