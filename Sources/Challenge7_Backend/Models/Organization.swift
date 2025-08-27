@@ -17,8 +17,8 @@ final class Organization: Model, @unchecked Sendable {
 
     /*Organization Atributes*/
     
-    @OptionalParent(key: "userOrganizarion")
-    var organizationUser: UserOrganization?
+    @Children(for: \.$organization)
+    var members: [UserOrganization]
 
     
     // MARK: - Properties
@@ -55,8 +55,8 @@ final class Organization: Model, @unchecked Sendable {
     
     
     init() {}
-    init(organizationUser: UserOrganization? = nil, id: UUID? = nil, name: String, token: String, appointment: Appointment? = nil, appointment_places: [String], first_id: User, users: [User.IDValue], availableMentors: [User.IDValue], queue: [Appointment.IDValue], unscheduleQueue: [Appointment.IDValue]) {
-        self.organizationUser = organizationUser
+    init(members: [UserOrganization], id: UUID? = nil, name: String, token: String, appointment: Appointment? = nil, appointment_places: [String], first_id: User, users: [User.IDValue], availableMentors: [User.IDValue], queue: [Appointment.IDValue], unscheduleQueue: [Appointment.IDValue]) {
+        self.members = members
         self.id = id
         self.name = name
         self.token = token

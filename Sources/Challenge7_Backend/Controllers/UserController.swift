@@ -22,7 +22,6 @@ struct UserController: RouteCollection{
             user.delete(use: delete)
         }
         
-        users.patch("updateRole", use: updateRole)
     }
     
     /// Fetches all users in data base
@@ -111,23 +110,7 @@ struct UserController: RouteCollection{
         return target.toDTO()
     }
     
-    func updateRole(req: Request) async throws -> UserOrganizationDTO {
-        let updateRequest = try req.content.decode(UserOrganizationDTO.UpdateRole.self)
-        
-        guard let userOrg = try await UserOrganization.find(updateRequest.id, on: req.db) else {
-            throw Abort(.notFound, reason: "relation not found")
-        }
-        
-        guard let user = try await User.find(updateRequest.user_id, on: req.db)
-        else{
-            throw Abort(.notFound)
-        }
-        
-        userOrg.user_role = updateRequest.user_role
-        
-        try await userOrg.update(on: req.db)
-        return userOrg.toDTO()
-    }
+    
     
     ///Admim can delete the user
     //TODO: - The adm can deletes the user, but he was suposed to remove from the org

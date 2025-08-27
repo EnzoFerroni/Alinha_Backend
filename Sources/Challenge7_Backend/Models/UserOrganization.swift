@@ -10,41 +10,34 @@ import Vapor
 import Fluent
 
 ///Aux table that contains the relationship between the user and the org
-final class UserOrganization: Model, @unchecked Sendable{
-    /// The schema name for the appointments table.
+final class UserOrganization: Model, @unchecked Sendable {
     static let schema = "RL_user_organization"
-    
-    /// Unique identifier for this relation.
+
     @ID(key: .id)
     var id: UUID?
-    
-    /// The org associated.
-    @OptionalChild(for: \.$organizationUser)
-    var org_id: Organization?
-    
-    /// The user associated.
-    @OptionalChild(for: \.$userOrganization)
-    var user_id: User?
-    
-    
-    ///User role in this org
+
+    @Parent(key: "org_id")
+    var organization: Organization
+
+    @Parent(key: "user_id")
+    var user: User
+
     @Enum(key: "user_role")
     var user_role: UserRole
-    
-    ///Class constructor
-    init(){}
-    init(id: UUID? = nil, org_id: Organization? = nil, user_id: User? = nil, user_role: UserRole) {
+
+    init() {}
+    init(id: UUID? = nil, orgID: Organization.IDValue, userID: User.IDValue, user_role: UserRole) {
         self.id = id
-        self.org_id = org_id
-        self.user_id = user_id
+        self.$organization.id = orgID
+        self.$user.id = userID
         self.user_role = user_role
     }
-    
-    func toDTO() -> UserOrganizationDTO{
-        return UserOrganizationDTO(
+
+    func toDTO() -> UserOrganizationDTO {
+        .init(
             id: self.id,
-            org_id: self.org_id?.id,
-            user_id: self.user_id?.id,
+            org_id: self.$organization.id,
+            user_id: self.$user.id,
             user_role: self.user_role
         )
     }
