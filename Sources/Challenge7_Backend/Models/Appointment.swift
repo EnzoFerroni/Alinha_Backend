@@ -16,8 +16,8 @@ final class Appointment: Model, @unchecked Sendable {
     /// Unique identifier for an appointment.
     @ID(key: .id)
     var id: UUID?
-    @OptionalChild(for: \.$appointment)
-    var organization: Organization?
+    @Parent(key: "organization_id")
+    var organization: Organization
     /// The mentor associated with the appointment.
     @OptionalChild(for: \.$appointment)
     var mentor: User?
