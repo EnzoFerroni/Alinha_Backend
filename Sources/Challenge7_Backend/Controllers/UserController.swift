@@ -21,7 +21,7 @@ struct UserController: RouteCollection{
             user.delete(use: delete)
         }
         
-        users.patch("updateName", use: updateName)
+        users.patch("updateName", use: updateUserName)
         
     }
     
@@ -67,7 +67,31 @@ struct UserController: RouteCollection{
     }
     
    
-    
+    /// Updates a user's name
+    /// Expects JSON body: { "id": UUID, "name": String }
+    func updateUserName(req: Request) async throws -> UserDTO {
+        // Define a minimal request body
+        struct UpdateNameBody: Content {
+            let id: UUID
+            let name: String
+        }
+        // Decode request body
+        let body = try req.content.decode(UpdateNameBody.self)
+
+        // Find the user by ID
+        guard let user = try await User.find(body.id, on: req.db) else {
+            throw Abort(.notFound, reason: "User not found")
+        }
+
+        // Update and persist
+        user.name = body.name
+        try await user.update(on: req.db)
+
+        // Return updated DTO
+        return user.toDTO()
+    }
+   
+   
     /// Deletes an user object
     /// - Parameter req: HTTP Request
     /// - Returns: HTTP code

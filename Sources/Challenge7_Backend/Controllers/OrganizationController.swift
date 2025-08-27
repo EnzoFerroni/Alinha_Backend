@@ -34,7 +34,6 @@ struct OrganizationsController: RouteCollection {
         // PATCH routes
         organizations.patch("updateName", use: updateName)
         organizations.patch("updateAppointmentPlaces", use: updateAppointmentPlaces)
-        organizations.patch("updateUsers", use: updateUsers)
         organizations.patch("updateAvailableMentors", use: updateAvailableMentors)
         organizations.patch("addAppointmentToQueue", use: addAppointmentToQueue)
         organizations.patch("addAppointmentToUnscheduleQueue", use: addAppointmentToUnscheduleQueue)
@@ -75,8 +74,7 @@ struct OrganizationsController: RouteCollection {
             name: createRequest.name,
             token: generateToken(),
             appointment_places: createRequest.appointmentPlaces ?? [],
-            first_id: createRequest.first_user_id!,
-            users: createRequest.users ?? [],
+            first_user_id: createRequest.first_user_id,
             availableMentors: createRequest.availableMentors ?? [],
             queue: [],
             unscheduleQueue: []
@@ -84,7 +82,12 @@ struct OrganizationsController: RouteCollection {
         
         try await organization.save(on: req.db)
         
-        try await UserOrganizationController.create(org: organization, user: createRequest.first_user_id!, role: .adm, database: req.db)
+        try await UserOrganizationController.create(
+            orgID: try organization.requireID(),
+            userID: createRequest.first_user_id,
+            role: .adm,
+            database: req.db
+        )
         
         return organization.toDTO()
     }
@@ -181,21 +184,6 @@ struct OrganizationsController: RouteCollection {
         try await organization.update(on: req.db)
         return organization
             .toDTO()
-    }
-    
-    /// Updates organization users
-    /// - Parameter req: HTTP request with ID and new users in body
-    /// - Returns: Organization DTO
-    func updateUsers(req: Request) async throws -> OrganizationDTO {
-        let updateRequest = try req.content.decode(OrganizationDTO.UpdateUsersRequest.self)
-        
-        guard let organization = try await Organization.find(updateRequest.id, on: req.db) else {
-            throw Abort(.notFound, reason: "Organization not found")
-        }
-        
-        organization.users = updateRequest.users
-        try await organization.update(on: req.db)
-        return organization.toDTO()
     }
     
     /// Updates organization available mentors
@@ -297,28 +285,27 @@ struct OrganizationsController: RouteCollection {
         return .noContent
     }
     
-    func enterOrg(req: Request) async throws -> HTTPStatus{
-        let create = try req.content.decode(UserOrganizationDTO.self)
-        
-        
-        guard let organization = try await Organization.find(create.org_id, on: req.db)
-        else {
-            throw Abort(.notFound)
+    func enterOrg(req: Request) async throws -> HTTPStatus {
+        let body = try req.content.decode(UserOrganizationDTO.self)
+
+        guard let orgID = body.org_id, let userID = body.user_id else {
+            throw Abort(.badRequest, reason: "Missing org_id or user_id")
         }
-        
-        
-        guard let relations = try await UserOrganization.find(create.id, on: req.db)
-        else {
-            throw Abort(.notFound)
+
+        // (Opcional) validar existência
+        guard try await Organization.find(orgID, on: req.db) != nil else {
+            throw Abort(.notFound, reason: "Organization not found")
         }
-        
-        guard let user = try await User.find(create.user_id, on: req.db)
-        else{
-            throw Abort(.notFound)
+        guard try await User.find(userID, on: req.db) != nil else {
+            throw Abort(.notFound, reason: "User not found")
         }
-        
-        try await UserOrganizationController.create(org: organization, user: user, role: .student, database: req.db)
-        
+
+        try await UserOrganizationController.create(
+            orgID: orgID,
+            userID: userID,
+            role: .student,
+            database: req.db
+        )
         return .ok
     }
     

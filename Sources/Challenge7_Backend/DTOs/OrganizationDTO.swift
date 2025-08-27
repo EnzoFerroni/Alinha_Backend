@@ -9,19 +9,19 @@ import Fluent
 import Vapor
 
 // MARK: - Main Organization DTO
-/// Main DTO representing organization data for API responses
 struct OrganizationDTO: Content {
     var id: UUID?
     var name: String?
-    var first_user_id: User?
+    var first_user_id: UUID?
     var token: String?
     var appointmentId: Appointment.IDValue?
     var appointment_places: [String]?
-    var users: [User.IDValue]?
     var availableMentors: [User.IDValue]?
     var queue: [Appointment.IDValue]?
     var unscheduleQueue: [Appointment.IDValue]?
 }
+
+
 
 // MARK: - Request DTOs
 extension OrganizationDTO {
@@ -36,13 +36,14 @@ extension OrganizationDTO {
     }
     
     /// DTO for creating new organization
+    
     struct CreateRequest: Content {
         var name: String
         var appointmentPlaces: [String]?
-        var users: [User.IDValue]?
-        var first_user_id: User?
+        var first_user_id: UUID
         var availableMentors: [User.IDValue]?
     }
+    
     
     /// DTO for updating organization name
     struct UpdateNameRequest: Content {
