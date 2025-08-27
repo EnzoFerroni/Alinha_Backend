@@ -19,7 +19,6 @@ final class Organization: Model, @unchecked Sendable {
     
     @OptionalParent(key: "userOrganizarion")
     var organizationUser: UserOrganization?
-
     
     // MARK: - Properties
     
