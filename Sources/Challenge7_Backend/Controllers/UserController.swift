@@ -95,46 +95,4 @@ struct UserController: RouteCollection{
         try await user.delete(on: req.db)
         return .ok
     }
-    
-    
-    // MARK: - Admin
-    
-    ///Adm can see the user profile
-    func adminShowUser(req: Request) async throws -> UserDTO {
-        let me = try req.auth.require(User.self)
-        let target = try await findUser(req)
-        
-        guard UserPolicy.canEditUser(actor: me, target: target) else {
-            throw Abort(.forbidden)
-        }
-        return target.toDTO()
-    }
-    
-    
-    
-    ///Admim can delete the user
-    //TODO: - The adm can deletes the user, but he was suposed to remove from the org
-    func adminDeleteUser(req: Request) async throws -> HTTPStatus {
-        let me = try req.auth.require(User.self)
-        let target = try await findUser(req)
-        
-        guard UserPolicy.canEditUser(actor: me, target: target) else {
-            throw Abort(.forbidden)
-        }
-        
-        try await target.delete(on: req.db)
-        return .ok
-    }
-    
-    // MARK: - Helpers
-    
-    private func findUser(_ req: Request) async throws -> User {
-        guard let idStr = req.parameters.get("id"),
-              let uuid = UUID(uuidString: idStr),
-              let user = try await User.find(uuid, on: req.db) else {
-            throw Abort(.notFound)
-        }
-        return user
-    }
-    
 }

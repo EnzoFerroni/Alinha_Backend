@@ -38,7 +38,11 @@ struct OrganizationsController: RouteCollection {
         organizations.patch("addAppointmentToUnscheduleQueue", use: addAppointmentToUnscheduleQueue)
         organizations.patch("removeFirstAppointmentFromQueue", use: removeFirstAppointmentFromQueue)
         organizations.patch("removeFirstAppointmentFromUnscheduleQueue", use: removeFirstAppointmentFromUnscheduleQueue)
+        
+        //Routes only for admin
         members.patch(":userID", "role", use: updateRole)
+        members.get(":userID", use: adminShowUser)
+        members.delete(":userID", use: adminDeleteUser)
         
         // Routes with ID in URL
         organizations.group(":id") { organization in
@@ -316,6 +320,11 @@ struct OrganizationsController: RouteCollection {
         return .ok
     }
     
+    //MARK: - ADM FUNCTIONS
+    
+    //MARK: USER -> ADM
+    
+    ///Updates the user role in the org
     func updateRole(req: Request) async throws -> UserOrganizationDTO {
         // Read path params
         guard let orgIDStr = req.parameters.get("orgID"),
@@ -343,7 +352,43 @@ struct OrganizationsController: RouteCollection {
         return relation.toDTO()
     }
     
+    /// Admin can see a user's profile.
+    /// Fetches UserOrganization relation by orgID/userID from path, returns target UserDTO.
+    func adminShowUser(req: Request) async throws -> UserDTO {
+        let (_, target) = try await findUser(req)
+        return target.toDTO()
+    }
+    
+    /// Admin can remove a user's membership from the organization.
+    /// Deletes the UserOrganization relation for the given orgID/userID path params.
+    func adminDeleteUser(req: Request) async throws -> HTTPStatus {
+        let (relation, _) = try await findUser(req)
+        try await relation.delete(on: req.db)
+        return .noContent
+    }
+    
     // MARK: - Private Methods
+    
+    /// Finds the UserOrganization relation and target User by orgID/userID path params.
+    /// Returns (UserOrganization, User). Throws if not found.
+    private func findUser(_ req: Request) async throws -> (UserOrganization, User) {
+        guard let orgIDStr = req.parameters.get("orgID"),
+              let orgID = UUID(uuidString: orgIDStr),
+              let userIDStr = req.parameters.get("userID"),
+              let userID = UUID(uuidString: userIDStr) else {
+            throw Abort(.badRequest, reason: "Missing or invalid orgID/userID")
+        }
+
+        guard let relation = try await UserOrganization.query(on: req.db)
+            .filter(\UserOrganization.$organization.$id == orgID)
+            .filter(\UserOrganization.$user.$id == userID)
+            .first() else {
+            throw Abort(.notFound, reason: "Membership not found for given org and user")
+        }
+
+        let target = try await relation.$user.get(on: req.db)
+        return (relation, target)
+    }
     
     /// Generates a random 6-digit token for organization access
     /// - Returns: 6-digit numeric string
