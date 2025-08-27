@@ -3,7 +3,7 @@ import Fluent
 
 // Middleware to check if the authenticated user is an admin of the specified organization
 struct UserAdminMiddleware: AsyncMiddleware {
-    func respond(to req: Request, chainingTo next: AsyncResponder) async throws -> Response {
+    func respond(to req: Request, chainingTo next: any AsyncResponder) async throws -> Response {
         
         // Check if user is authenticated
         guard let actor = req.auth.get(User.self) else {

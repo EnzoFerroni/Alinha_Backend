@@ -18,9 +18,10 @@ struct UserController: RouteCollection{
         
         users.group(":id"){user in
             user.get(use: show)
-            user.put(use: update)
             user.delete(use: delete)
         }
+        
+        users.patch("updateName", use: updateName)
         
     }
     
@@ -65,25 +66,7 @@ struct UserController: RouteCollection{
         return user.toDTO()
     }
     
-    /// Creates user updating gate
-    /// - Parameter req: HTTP Request
-    /// - Returns: userDTO
-    func update(req: Request) async throws -> UserDTO {
-        guard let user = try await User.find(req.parameters.get("id"), on: req.db) else {
-            throw Abort(.notFound)
-        }
-        
-        let updatedUser = try req.content.decode(User.self)
-        
-        user.name = updatedUser.name
-        user.email = updatedUser.email
-        user.password = updatedUser.password
-        user.path = updatedUser.path
-        user.role = updatedUser.role
-        
-        try await user.save(on: req.db)
-        return user.toDTO()
-    }
+   
     
     /// Deletes an user object
     /// - Parameter req: HTTP Request
@@ -95,4 +78,5 @@ struct UserController: RouteCollection{
         try await user.delete(on: req.db)
         return .ok
     }
+
 }

@@ -23,10 +23,10 @@ struct OrganizationsController: RouteCollection {
         guarded.delete(":orgID", use: admDeleteOrg)
         // GET routes
         organizations.get(use: index)
-        organizations.post("getByToken", use: getByToken)
-        organizations.post("getQueue", use: getQueue)
-        organizations.post("getUnscheduleQueue", use: getUnscheduleQueue)
-        organizations.post("getAppointmentPlaces", use: getAppointmentPlaces)
+        organizations.get("getByToken", use: getByToken)
+        organizations.get("getQueue", use: getQueue)
+        organizations.get("getUnscheduleQueue", use: getUnscheduleQueue)
+        organizations.get("getAppointmentPlaces", use: getAppointmentPlaces)
         
         // POST routes
         organizations.post("create", use: create)

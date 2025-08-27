@@ -28,6 +28,11 @@ extension UserDTO{
         var role: UserRole
         var path: UserPath
     }
+    
+    struct UpdateNameRequest: Content {
+        var id: UUID
+        var name: String
+    }
 }
 
 ///All Authenticatable atributes
