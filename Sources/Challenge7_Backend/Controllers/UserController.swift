@@ -18,9 +18,10 @@ struct UserController: RouteCollection{
         
         users.group(":id"){user in
             user.get(use: show)
-            user.put(use: update)
             user.delete(use: delete)
         }
+        
+        users.patch("updateName", use: updateName)
         
     }
     
@@ -65,25 +66,7 @@ struct UserController: RouteCollection{
         return user.toDTO()
     }
     
-    /// Creates user updating gate
-    /// - Parameter req: HTTP Request
-    /// - Returns: userDTO
-    func update(req: Request) async throws -> UserDTO {
-        guard let user = try await User.find(req.parameters.get("id"), on: req.db) else {
-            throw Abort(.notFound)
-        }
-        
-        let updatedUser = try req.content.decode(User.self)
-        
-        user.name = updatedUser.name
-        user.email = updatedUser.email
-        user.password = updatedUser.password
-        user.path = updatedUser.path
-        user.role = updatedUser.role
-        
-        try await user.save(on: req.db)
-        return user.toDTO()
-    }
+   
     
     /// Deletes an user object
     /// - Parameter req: HTTP Request
@@ -110,7 +93,20 @@ struct UserController: RouteCollection{
         return target.toDTO()
     }
     
-    
+    /// Updates User name
+    /// - Parameter req: HTTP request with ID and new name in body
+    /// - Returns: User DTO
+    func updateName(req: Request) async throws -> UserDTO {
+        let updateRequest = try req.content.decode(UserDTO.UpdateNameRequest.self)
+        
+        guard let user = try await User.find(updateRequest.id, on: req.db) else {
+            throw Abort(.notFound, reason: "user not found")
+        }
+        
+        user.name = updateRequest.name
+        try await user.update(on: req.db)
+        return user.toDTO()
+    }
     
     ///Admim can delete the user
     //TODO: - The adm can deletes the user, but he was suposed to remove from the org
