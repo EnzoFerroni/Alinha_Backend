@@ -8,17 +8,21 @@ import Fluent
 import Vapor
 
 class UserOrganizationController{
-    
+    ///Fetches all the UserOrganizations
     func index(req: Request) async throws -> [UserOrganizationDTO] {
         try await UserOrganization.query(on: req.db).all().map { $0.toDTO() }
     }
     
     
+    ///Creates a new userOrganization
     static func create(org: Organization, user: User, role: UserRole, database: any Database) async throws{
         
+        let orgID = try org.requireID()
+        let userID = try user.requireID()
+
         let userOrg = UserOrganization(
-            org_id: org,
-            user_id: user,
+            orgID: orgID,
+            userID: userID,
             user_role: role
         )
         

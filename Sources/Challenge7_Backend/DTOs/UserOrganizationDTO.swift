@@ -22,4 +22,11 @@ extension UserOrganizationDTO{
         var user_id: User.IDValue
         var user_role: UserRole
     }
+    
+    ///Updates one user Role
+    struct UpdateRole: Content {
+        var id: UUID
+        var user_id: UUID
+        var user_role: UserRole
+    }
 }

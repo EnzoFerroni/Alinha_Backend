@@ -21,6 +21,7 @@ struct UserController: RouteCollection{
             user.put(use: update)
             user.delete(use: delete)
         }
+        
     }
     
     /// Fetches all users in data base
@@ -110,36 +111,6 @@ struct UserController: RouteCollection{
     }
     
     
-    struct UserAdminUpdateDTO: Content {
-        var name: String?
-        var email: String?
-        var path: UserPath?
-        var role: UserRole?
-    }
-    
-    ///Updates the user atribures
-    func adminUpdateUser(req: Request) async throws -> UserDTO {
-        let me = try req.auth.require(User.self)
-        let target = try await findUser(req)
-        let body = try req.content.decode(UserAdminUpdateDTO.self)
-        
-        guard UserPolicy.canEditUser(actor: me, target: target) else {
-            throw Abort(.unauthorized)
-        }
-        
-        if let name = body.name { target.name = name }
-        if let email = body.email { target.email = email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }
-        if let path = body.path { target.path = path }
-        if let role = body.role {
-            guard UserPolicy.canChangeRole(actor: me, target: target) else {
-                throw Abort(.unauthorized, reason: "Only admin can change user role.")
-            }
-            target.role = role
-        }
-        
-        try await target.update(on: req.db)
-        return target.toDTO()
-    }
     
     ///Admim can delete the user
     //TODO: - The adm can deletes the user, but he was suposed to remove from the org
