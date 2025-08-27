@@ -19,7 +19,6 @@ final class Organization: Model, @unchecked Sendable {
     
     @OptionalParent(key: "userOrganizarion")
     var organizationUser: UserOrganization?
-
     
     // MARK: - Properties
     
@@ -32,7 +31,7 @@ final class Organization: Model, @unchecked Sendable {
     @Field(key: "token")
     var token: String
     
-    @OptionalParent(key: "appointment_id")
+    @OptionalChild(for: \.$organization)
     var appointment: Appointment?
     
     @Field(key: "appointment_places")
