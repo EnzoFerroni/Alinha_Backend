@@ -18,6 +18,7 @@ struct OrganizationMigration: AsyncMigration {
         try await database.schema("TB_organizations")
             .id()
             .field("name", .string, .required)
+            .field("first_user_id", .string, .required)
             .field("token", .string, .required)
             .field("appointment_places", .array(of: .string), .required)
             .field("users", .array(of: .uuid), .required)
