@@ -21,6 +21,8 @@ struct UserController: RouteCollection{
             user.put(use: update)
             user.delete(use: delete)
         }
+        
+        users.patch("updateRole", use: updateRole)
     }
     
     /// Fetches all users in data base
@@ -109,36 +111,22 @@ struct UserController: RouteCollection{
         return target.toDTO()
     }
     
-    
-    struct UserAdminUpdateDTO: Content {
-        var name: String?
-        var email: String?
-        var path: UserPath?
-        var role: UserRole?
-    }
-    
-    ///Updates the user atribures
-    func adminUpdateUser(req: Request) async throws -> UserDTO {
-        let me = try req.auth.require(User.self)
-        let target = try await findUser(req)
-        let body = try req.content.decode(UserAdminUpdateDTO.self)
+    func updateRole(req: Request) async throws -> UserOrganizationDTO {
+        let updateRequest = try req.content.decode(UserOrganizationDTO.UpdateRole.self)
         
-        guard UserPolicy.canEditUser(actor: me, target: target) else {
-            throw Abort(.unauthorized)
+        guard let userOrg = try await UserOrganization.find(updateRequest.id, on: req.db) else {
+            throw Abort(.notFound, reason: "relation not found")
         }
         
-        if let name = body.name { target.name = name }
-        if let email = body.email { target.email = email.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }
-        if let path = body.path { target.path = path }
-        if let role = body.role {
-            guard UserPolicy.canChangeRole(actor: me, target: target) else {
-                throw Abort(.unauthorized, reason: "Only admin can change user role.")
-            }
-            target.role = role
+        guard let user = try await User.find(updateRequest.user_id, on: req.db)
+        else{
+            throw Abort(.notFound)
         }
         
-        try await target.update(on: req.db)
-        return target.toDTO()
+        userOrg.user_role = updateRequest.user_role
+        
+        try await userOrg.update(on: req.db)
+        return userOrg.toDTO()
     }
     
     ///Admim can delete the user
