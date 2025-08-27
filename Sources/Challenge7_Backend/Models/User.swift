@@ -31,7 +31,7 @@ final class User: Model, @unchecked Sendable, Content{
     
     @OptionalChild(for: \.$mentor)
     var appointmentMentor: Appointment?
->
+
 
     ///Parent relation to organization
 //    @OptionalParent(key: "user_appointment")
