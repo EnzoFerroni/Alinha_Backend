@@ -20,24 +20,6 @@ final class User: Model, @unchecked Sendable, Content{
     @ID(key: .id)
     var id: UUID?
     
-
-
-    @Children(for: \.$user)
-    var organizations: [UserOrganization]
-
-    
-    @OptionalChild(for: \.$student) 
-    var appointmentStudent: Appointment?
-    
-    @OptionalChild(for: \.$mentor)
-    var appointmentMentor: Appointment?
-
-
-    ///Parent relation to organization
-//    @OptionalParent(key: "user_appointment")
-//    var fappointment: Appointment?
-
-    
     /*User Atributes*/
     @Field(key: "name")
     var name: String
@@ -51,19 +33,20 @@ final class User: Model, @unchecked Sendable, Content{
     @Enum(key: "role")
     var role: UserRole
     
-    @Enum(key: "path")
-    var path: UserPath
-    
+//    @OptionalChild(for: \.$student) 
+//    var appointmentStudent: Appointment?
+//    
+//    @OptionalChild(for: \.$mentor)
+//    var appointmentMentor: Appointment?
     
     ///Class constructor
     init() {}
-    init(id: UUID? = nil, name: String, email: String, password: String, role: UserRole, path: UserPath) {
+    init(id: UUID? = nil, name: String, email: String, password: String, role: UserRole) {
         self.id = id
         self.name = name
         self.email = email
         self.password = password
         self.role = role
-        self.path = path
     }
     
     /// Converts an user to UserDto
@@ -73,8 +56,7 @@ final class User: Model, @unchecked Sendable, Content{
               name: self.$name.value,
               email: self.$email.value,
               password: self.$password.value,
-              role: self.$role.value,
-              path: self.$path.value)
+              role: self.$role.value,)
     }
     
     /// What the frontEnd can "see"
@@ -87,7 +69,6 @@ final class User: Model, @unchecked Sendable, Content{
             self.email = email
         }
     }
-
 }
 
 //MARK: - Authentication

@@ -12,3 +12,4 @@ struct AdminOnlyMiddleware: AsyncMiddleware {
         return try await next.respond(to: req)
     }
 }
+

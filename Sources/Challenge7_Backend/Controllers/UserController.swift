@@ -15,7 +15,7 @@ struct UserController: RouteCollection{
         let users = routes.grouped("users")
         users.get(use: index)
         users.post(use: create)
-        
+        //user.post(use: login)
         users.group(":id"){user in
             user.get(use: show)
             user.delete(use: delete)
@@ -48,13 +48,24 @@ struct UserController: RouteCollection{
             email: create.email,
             password: Bcrypt.hash(create.password),
             role: create.role,
-            path: create.path
         )
         
         try await user.save(on: req.db)
         return user.convertToPublic()
-        
     }
+    
+//    @Sendable
+//    func login(req: Request) async throws -> User.Public {
+//        try UserDTO.Login.validate(content: req)
+//        let create = try req.content.decode(UserDTO.Login.self)
+//        
+//        guard let user = try await User.query(on: req.db)
+//            .filter(\.$email == create.email)
+//            .first()
+//        else {
+//            throw Abort(.unauthorized, reason: "Invalid credentials")
+//        }
+//    }
     
     /// Requets all users
     /// - Parameter req: HTTP Request
@@ -65,7 +76,6 @@ struct UserController: RouteCollection{
         }
         return user.toDTO()
     }
-    
    
     /// Updates a user's name
     /// Expects JSON body: { "id": UUID, "name": String }
