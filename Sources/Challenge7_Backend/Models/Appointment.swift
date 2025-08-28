@@ -19,7 +19,7 @@ final class Appointment: Model, @unchecked Sendable {
     
     /// The student associated with the appointment.
     @Parent(key: "user_id")
-    var user: User
+    var student: User
     
     @Field(key: "mentor")
     var mentor: String
@@ -74,7 +74,7 @@ final class Appointment: Model, @unchecked Sendable {
     func toDTO() -> AppointmentDTO {
         .init (
             id: self.id,
-            mentor: self.mentor.id,
+            mentor: self.mentor,
             student: self.student.id,
             appointmentPlace: self.$appointmentPlace.value,
             appointmentCategory: self.$appointmentCategory.value,
