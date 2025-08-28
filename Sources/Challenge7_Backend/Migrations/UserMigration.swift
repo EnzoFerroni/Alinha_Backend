@@ -20,24 +20,13 @@ struct UserMigration: AsyncMigration {
         
         let userRole = try await database.enum("user_role").read()
         
-        try await database.enum("user_path")
-            .case("code")
-            .case("design")
-            .case("undefined")
-            .create()
-        
-        let pathType = try await database.enum("user_path").read()
-        
         try await database.schema("TB_users")
             .id()
             .field("name", .string, .required)
             .field("email", .string, .required)
             .field("password", .string, .required)
             .field("role", userRole, .required)
-            .field("path", pathType, .required)
-            .field("organization_id", .uuid, .references("TB_organizations", "id"))
             .unique(on: "email")
-            .unique(on: "organization_id")
             .create()
     }
     
