@@ -17,7 +17,7 @@ struct UserController: RouteCollection{
         let users = routes.grouped("users")
         users.get(use: index)
         users.post(use: create)
-        users.post(use: login)
+        users.post("login", use: login)
         users.group(":id"){ user in
             user.get(use: show)
             user.delete(use: delete)
