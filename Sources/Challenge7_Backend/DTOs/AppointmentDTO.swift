@@ -12,17 +12,14 @@ import Vapor
 struct AppointmentDTO: Content {
     /// Unique identifier for the appointment.
     var id: UUID?
-    var organization: Organization.IDValue?
     /// Mentor user associated with the appointment.
-    var mentor: User.IDValue?
+    var mentor: String?
     /// Student user associated with the appointment.
     var student: User.IDValue?
     /// Place where the appointment will occur.
     var appointmentPlace: String?
     /// Category of the appointment, based on user path.
-    var appointmentCategory: UserPath?
-    /// Type of the appointment (e.g., ddoubt, problem).
-    var appointmentType: AppointmentType?
+    var appointmentCategory: AppointmentPath?
     /// Indicates if the appointment is scheduled.
     var isScheduled: Bool?
     /// Indicates if the student should be called for the appointment.
@@ -34,11 +31,6 @@ struct AppointmentDTO: Content {
 }
 
 extension AppointmentDTO {
-    /// DTO for updating the mentor of an appointment.
-    struct UpdateMentor : Content {
-        var appointmentId: UUID
-        var mentor: User
-    }
     /// DTO for updating the place of an appointment.
     struct UpdatePlace: Content {
         var appointmentId: UUID

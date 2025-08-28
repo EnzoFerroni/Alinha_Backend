@@ -17,32 +17,19 @@ final class Appointment: Model, @unchecked Sendable {
     @ID(key: .id)
     var id: UUID?
     
-//    @OptionalChild(for: \.$appointment)
-//    var organization: Organization?
-    @Parent(key: "organization_id")
-    var organization: Organization
-    
-    /// The mentor associated with the appointment.
-//    @OptionalChild(for: \.$appointment)
-//    var mentor: User?
-    @Parent(key: "user_id")
-    var mentor: User
-    
     /// The student associated with the appointment.
-//    @OptionalChild(for: \.$appointment)
-//    var student: User?
     @Parent(key: "user_id")
     var student: User
+    
+    @Field(key: "mentor")
+    var mentor: String
     
     /// The place where the appointment will occur.
     @Field(key: "appointmentPlace")
     var appointmentPlace: String
     /// The category of the appointment, based on user path.
     @Enum(key: "appointmentCategory")
-    var appointmentCategory: UserPath
-    /// The type of the appointment (e.g., ddoubt, problem).
-    @Enum(key: "appointmentType")
-    var appointmentType: AppointmentType
+    var appointmentCategory: AppointmentPath
     /// Indicates if the appointment is scheduled.
     @Boolean(key: "isScheduled")
     var isScheduled: Bool
@@ -70,17 +57,16 @@ final class Appointment: Model, @unchecked Sendable {
     ///    - callStudent: Whether to call the student.
     ///    - isDone: Whether the appointment is done.
     ///    - createdAt: The creation date of the appointment.
-    init(id: UUID? = nil, organization: Organization.IDValue, mentor: User.IDValue, student: User.IDValue, appointmentPlace: String, appointmentCategory: UserPath, appointmentType: AppointmentType, isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date) {
+    
+    init(id: UUID? = nil, mentor: String, appointmentPlace: String, appointmentCategory: AppointmentPath, isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date? = nil) {
         self.id = id
-        self.$organization.id = organization
-        self.$mentor.id = mentor
-        self.$student.id = student
+        self.mentor = mentor
         self.appointmentPlace = appointmentPlace
         self.appointmentCategory = appointmentCategory
-        self.isScheduled = false
-        self.callStudent = false
-        self.isDone = false
-        self.createdAt = Date.now
+        self.isScheduled = isScheduled
+        self.callStudent = callStudent
+        self.isDone = isDone
+        self.createdAt = createdAt
     }
     
     /// Converts the Appointment model to its corresponding DTO.
@@ -88,12 +74,10 @@ final class Appointment: Model, @unchecked Sendable {
     func toDTO() -> AppointmentDTO {
         .init (
             id: self.id,
-            organization: self.organization.id,
-            mentor: self.mentor.id,
+            mentor: self.mentor,
             student: self.student.id,
             appointmentPlace: self.$appointmentPlace.value,
             appointmentCategory: self.$appointmentCategory.value,
-            appointmentType: self.$appointmentType.value,
             isScheduled: self.$isScheduled.value,
             callStudent: self.$callStudent.value,
             isDone: self.$isDone.value,

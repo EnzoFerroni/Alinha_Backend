@@ -8,7 +8,7 @@
 import Foundation
 
 ///Enumerates differents types of user path of interest
-enum UserPath: String, Codable {
+enum AppointmentPath: String, Codable {
     case design
     case code
     case undefined
