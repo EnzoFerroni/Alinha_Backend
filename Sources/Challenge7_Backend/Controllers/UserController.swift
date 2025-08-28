@@ -49,7 +49,7 @@ struct UserController: RouteCollection{
             name: create.name,
             email: create.email,
             password: Bcrypt.hash(create.password),
-            role: create.role,
+            role: create.role
         )
         
         try await user.save(on: req.db)
