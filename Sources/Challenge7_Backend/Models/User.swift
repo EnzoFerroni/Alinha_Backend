@@ -52,12 +52,12 @@ final class User: Model, @unchecked Sendable, Content{
     var role: UserRole
     
     @Enum(key: "path")
-    var path: UserPath
+    var path: AppointmentPath
     
     
     ///Class constructor
     init() {}
-    init(id: UUID? = nil, name: String, email: String, password: String, role: UserRole, path: UserPath) {
+    init(id: UUID? = nil, name: String, email: String, password: String, role: UserRole, path: AppointmentPath) {
         self.id = id
         self.name = name
         self.email = email
