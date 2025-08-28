@@ -26,8 +26,6 @@ public func configure(_ app: Application) async throws {
     let cors = CORSMiddleware(configuration: corsConfiguration)
     
     app.middleware.use(cors, at: .beginning)
-    
-    app.migrations.add(OrganizationMigration())
     app.migrations.add(UserMigration())
     app.migrations.add(CreateAppointment())
 

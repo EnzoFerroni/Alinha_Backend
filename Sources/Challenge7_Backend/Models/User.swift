@@ -33,11 +33,9 @@ final class User: Model, @unchecked Sendable, Content{
     @Enum(key: "role")
     var role: UserRole
     
-//    @OptionalChild(for: \.$student)
-//    var appointmentStudent: Appointment?
-//
-//    @OptionalChild(for: \.$mentor)
-//    var appointmentMentor: Appointment?
+    @OptionalChild(for: \.$student)
+    var appointmentStudent: Appointment?
+
     
     ///Class constructor
     init() {}
