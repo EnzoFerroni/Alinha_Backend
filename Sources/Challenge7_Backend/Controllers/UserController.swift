@@ -17,10 +17,13 @@ struct UserController: RouteCollection{
         let users = routes.grouped("users")
         users.get(use: index)
         users.post(use: create)
-        users.post("login", use: login)
         users.group(":id"){ user in
             user.get(use: show)
             user.delete(use: delete)
+        }
+        let passwordProtected = users.grouped(User.authenticator())
+        passwordProtected.post("login") { req -> User in
+            try req.auth.require(User.self)
         }
         
         users.patch("updateName", use: updateUserName)
@@ -53,24 +56,6 @@ struct UserController: RouteCollection{
         )
         
         try await user.save(on: req.db)
-        return user.convertToPublic()
-    }
-    
-    @Sendable
-    func login(req: Request) async throws -> User.Public {
-        try UserDTO.Login.validate(content: req)
-        let create = try req.content.decode(UserDTO.Login.self)
-        
-        guard let user = try await User.query(on: req.db)
-            .filter(\.$password == create.password)
-            .filter(\.$email == create.email)
-            .first()
-        else {
-            throw Abort(.unauthorized, reason: "Invalid credentials")
-        }
-
-        req.auth.login(user)
-        
         return user.convertToPublic()
     }
 }
