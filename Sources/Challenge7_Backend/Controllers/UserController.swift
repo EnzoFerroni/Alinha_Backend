@@ -1,3 +1,4 @@
+
 //
 //  File.swift
 //  Challenge7_Backend
@@ -58,7 +59,7 @@ struct UserController: RouteCollection{
 //    func login(req: Request) async throws -> User.Public {
 //        try UserDTO.Login.validate(content: req)
 //        let create = try req.content.decode(UserDTO.Login.self)
-//        
+//
 //        guard let user = try await User.query(on: req.db)
 //            .filter(\.$email == create.email)
 //            .first()

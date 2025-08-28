@@ -16,8 +16,6 @@ struct UserDTO: Authenticatable, Content {
     var email: String?
     var password: String?
     var role: UserRole?
-    var path: AppointmentPath?
-
 }
 
 extension UserDTO {
@@ -27,8 +25,6 @@ extension UserDTO {
         var password: String
         var confirmedPassword: String
         var role: UserRole
-        var path: AppointmentPath
-
     }
     
     struct UpdateNameRequest: Content, Decodable {
@@ -57,3 +53,4 @@ extension UserDTO.Login: Validatable {
         validations.add("password", as: String.self, is: .count(8...))
     }
 }
+

@@ -33,22 +33,15 @@ final class User: Model, @unchecked Sendable, Content{
     @Enum(key: "role")
     var role: UserRole
     
-
-    @Enum(key: "path")
-    var path: AppointmentPath
-    
-    
-    ///Class constructor
-    init() {}
-    init(id: UUID? = nil, name: String, email: String, password: String, role: UserRole, path: AppointmentPath) {
-
-//    @OptionalChild(for: \.$student) 
+//    @OptionalChild(for: \.$student)
 //    var appointmentStudent: Appointment?
-//    
+//
 //    @OptionalChild(for: \.$mentor)
 //    var appointmentMentor: Appointment?
     
-   
+    ///Class constructor
+    init() {}
+    init(id: UUID? = nil, name: String, email: String, password: String, role: UserRole) {
         self.id = id
         self.name = name
         self.email = email
