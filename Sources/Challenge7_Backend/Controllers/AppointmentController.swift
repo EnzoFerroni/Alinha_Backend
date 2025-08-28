@@ -17,7 +17,6 @@ struct AppointmentController: RouteCollection {
         appointments.get(use: index)
         appointments.post(use: create)
         appointments.delete(use: delete)
-        appointments.patch("mentor", use: updateMentor)
         appointments.patch("place", use: updatePlace)
         appointments.patch("isScheduled", use: updateScheduled)
         appointments.patch("callStudent", use: updateCallStudent)
@@ -38,12 +37,9 @@ struct AppointmentController: RouteCollection {
     func create(req: Request) async throws -> AppointmentDTO {
         let appointment = try req.content.decode(AppointmentDTO.self)
         let appointmentModel = Appointment(
-            organization: appointment.organization!,
             mentor: appointment.mentor!,
-            student: appointment.student!,
             appointmentPlace: appointment.appointmentPlace!,
             appointmentCategory: appointment.appointmentCategory!,
-            appointmentType: appointment.appointmentType!,
             isScheduled: appointment.isScheduled ?? false,
             callStudent: appointment.callStudent ?? false,
             isDone: appointment.isDone ?? false,
@@ -60,18 +56,6 @@ struct AppointmentController: RouteCollection {
             throw Abort(.notFound)
         }
         return appointment.toDTO()
-    }
-    
-    /// Updates the mentor of an appointment.
-    /// - Returns: The updated mentor DTO.
-    func updateMentor(req: Request) async throws -> AppointmentDTO.UpdateMentor {
-        let create = try req.content.decode(AppointmentDTO.UpdateMentor.self)
-        guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
-            throw Abort(.notFound)
-        }
-        appointment.mentor = create.mentor
-        try await appointment.update(on: req.db)
-        return create
     }
     
     /// Updates the place of an appointment.

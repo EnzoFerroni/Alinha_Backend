@@ -19,12 +19,11 @@ struct CreateAppointment: AsyncMigration {
         
         try await database.schema("TB_appointments")
             .id()
-            .field("organization_id", .uuid, .references("TB_organizations", "id"))
             .field("mentor_id", .uuid, .references("TB_users", "id"))
             .field("student_id", .uuid, .required, .references("TB_users", "id"))
             .field("appointmentPlace", .string)
             .field("appointmentCategory", userPath, .required)
-            .field("appointmentType", appointmentType, .required)
+            //.field("appointmentType", appointmentType, .required)
             .field("isScheduled", .bool)
             .field("callStudent", .bool)
             .field("isDone", .bool)

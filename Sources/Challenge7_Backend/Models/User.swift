@@ -26,11 +26,8 @@ final class User: Model, @unchecked Sendable, Content{
     var organizations: [UserOrganization]
 
     
-    @OptionalChild(for: \.$student) 
+    @OptionalChild(for: \.$student)
     var appointmentStudent: Appointment?
-    
-    @OptionalChild(for: \.$mentor)
-    var appointmentMentor: Appointment?
 
 
     ///Parent relation to organization
