@@ -54,7 +54,7 @@ final class User: Model, @unchecked Sendable, Content{
               name: self.$name.value,
               email: self.$email.value,
               password: self.$password.value,
-              role: self.$role.value,)
+              role: self.$role.value)
     }
     
     /// What the frontEnd can "see"
