@@ -23,7 +23,7 @@ struct CreateAppointment: AsyncMigration {
             .field("student_id", .uuid, .required, .references("TB_users", "id"))
             .field("appointmentPlace", .string)
             .field("appointmentCategory", userPath, .required)
-            //.field("appointmentType", appointmentType, .required)
+            .field("appointmentType", appointmentType, .required)
             .field("isScheduled", .bool)
             .field("callStudent", .bool)
             .field("isDone", .bool)
