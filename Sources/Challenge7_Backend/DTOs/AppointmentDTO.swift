@@ -49,4 +49,11 @@ extension AppointmentDTO {
         var appointmentId: UUID
         var isDone: Bool
     }
+    
+    struct CreateRequest: Content {
+        var name: String
+        var mentor: String
+        var student: User
+        var appointmentPlaces: String
+    }
 }

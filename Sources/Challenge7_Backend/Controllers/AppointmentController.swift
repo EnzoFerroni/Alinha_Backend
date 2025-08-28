@@ -83,17 +83,19 @@ struct AppointmentController: RouteCollection {
         guard let place = input.appointmentPlace, !place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw Abort(.badRequest, reason: "appointmentPlace is required")
         }
-        guard let category = input.appointmentCategory else {
-            throw Abort(.badRequest, reason: "appointmentCategory is required")
+        
+        guard let user = try await User.find(input.student, on: req.db)else{
+            throw Abort(.badRequest, reason: "user unfound")
         }
+        
         // Mentor remains optional; prefer storing an ID in the model if available
         let mentor = input.mentor
 
         // Server authority for queue semantics
         let model = Appointment(
-            mentor: mentor ?? "EMPTY MENTOR",
-            appointmentPlace: place,
-            appointmentCategory: category,
+            mentor: input.mentor ?? "EMPTY MENTOR",
+            appointmentPlace: input.appointmentPlace ?? "LOCAL UNDEFINED",
+            student: user,
             isScheduled: false, // start waiting in queue
             callStudent: false,
             isDone: false,

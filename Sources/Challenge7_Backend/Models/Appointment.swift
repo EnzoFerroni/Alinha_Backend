@@ -55,9 +55,10 @@ final class Appointment: Model, @unchecked Sendable {
     ///    - isDone: Whether the appointment is done.
     ///    - createdAt: The creation date of the appointment.
     
-    init(id: UUID? = nil, mentor: String, appointmentPlace: String,  isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date? = nil) {
+    init(id: UUID? = nil, mentor: String, appointmentPlace: String,student: User,  isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date? = nil) {
         self.id = id
         self.mentor = mentor
+        self.student = student
         self.appointmentPlace = appointmentPlace
         self.isScheduled = isScheduled
         self.callStudent = callStudent
