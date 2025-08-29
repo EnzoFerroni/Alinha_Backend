@@ -35,7 +35,7 @@ struct AppointmentController: RouteCollection {
             let authenticatedId = appointment.grouped(User.authenticator())
             let secured = authenticatedId.grouped(AdmMentorMiddleware())
             secured.delete(use: delete)
-            secured.patch("place", use: updatePlaceById)
+            // Removida: secured.patch("place", use: updatePlaceById) - usar apenas /appointments/place
             secured.patch("isScheduled", use: updateScheduledById)
             secured.patch("callStudent", use: updateCallStudentById)
             secured.patch("isDone", use: updateIsDoneById)
@@ -205,21 +205,6 @@ struct AppointmentController: RouteCollection {
         }
         try await appointment.delete(on: req.db)
         return "Appointment deleted."
-    }
-    
-
-    /// PATCH /appointments/:id/place { "appointmentPlace": String }
-    func updatePlaceById(req: Request) async throws -> AppointmentDTO {
-        struct Body: Content { let appointmentPlace: String }
-        let body = try req.content.decode(Body.self)
-        guard let idString = req.parameters.get("id"),
-              let id = UUID(uuidString: idString),
-              let appointment = try await Appointment.find(id, on: req.db) else {
-            throw Abort(.notFound)
-        }
-        appointment.appointmentPlace = body.appointmentPlace
-        try await appointment.update(on: req.db)
-        return appointment.toDTO()
     }
 
     /// PATCH /appointments/:id/isScheduled { "isScheduled": Bool }
