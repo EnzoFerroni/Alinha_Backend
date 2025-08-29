@@ -8,15 +8,15 @@
 import Vapor
 import Fluent
 
-struct AdmMentorMiddleware: AsyncMiddleware {
-    func respond(to req: Request, chainingTo next: any AsyncResponder) async throws -> Response {
+struct AdmMentorMiddleware: Middleware {
+    func respond(to req: Request, chainingTo next: any Responder) -> EventLoopFuture<Response> {
         guard let user = req.auth.get(User.self) else {
-            throw Abort(.unauthorized, reason: "Not authenticated")
+            return req.eventLoop.future (error: Abort(.unauthorized, reason: "Not authenticated"))
         }
         guard user.role == .mentor || user.role == .adm else {
-            throw Abort(.forbidden, reason: "Admins only")
+            return req.eventLoop.future (error: Abort(.forbidden, reason: "Admins only"))
         }
-        return try await next.respond(to: req)
+        return next.respond(to: req)
     }
 }
 
