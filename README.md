@@ -11,7 +11,8 @@
 
 
 ## Class Diagram
-<img width="1476" height="773" alt="image" src="https://github.com/user-attachments/assets/73f74ef8-a509-4a53-a68a-18723208cec9"/>
+<img width="1426" height="741" alt="image" src="https://github.com/user-attachments/assets/196ca5de-320e-4cbd-aded-bc0693807afe" />
+
 
 ### 👤 Authors | Autores
 <div align="left">
