@@ -31,14 +31,9 @@ struct AppointmentController: RouteCollection {
         
         appointments.group(":id") { appointment in
             appointment.get(use: show)
-            // Corrigir: adicionar autenticação antes do middleware de autorização
             let authenticatedId = appointment.grouped(User.authenticator())
             let secured = authenticatedId.grouped(AdmMentorMiddleware())
             secured.delete(use: delete)
-            // Removida: secured.patch("place", use: updatePlaceById) - usar apenas /appointments/place
-            secured.patch("isScheduled", use: updateScheduledById)
-            secured.patch("callStudent", use: updateCallStudentById)
-            secured.patch("isDone", use: updateIsDoneById)
         }
     }
     
@@ -206,50 +201,6 @@ struct AppointmentController: RouteCollection {
         try await appointment.delete(on: req.db)
         return "Appointment deleted."
     }
-
-    /// PATCH /appointments/:id/isScheduled { "isScheduled": Bool }
-    func updateScheduledById(req: Request) async throws -> AppointmentDTO {
-        struct Body: Content { let isScheduled: Bool }
-        let body = try req.content.decode(Body.self)
-        guard let idString = req.parameters.get("id"),
-              let id = UUID(uuidString: idString),
-              let appointment = try await Appointment.find(id, on: req.db) else {
-            throw Abort(.notFound)
-        }
-        appointment.isScheduled = body.isScheduled
-        try await appointment.update(on: req.db)
-        return appointment.toDTO()
-    }
-
-    func updateCallStudentById(req: Request) async throws -> AppointmentDTO {
-        struct Body: Content { let callStudent: Bool }
-        let body = try req.content.decode(Body.self)
-        
-        guard let idString = req.parameters.get("id"),
-              let id = UUID(uuidString: idString),
-              let appointment = try await Appointment.find(id, on: req.db) else {
-            throw Abort(.notFound)
-        }
-        
-        appointment.callStudent = body.callStudent
-        try await appointment.update(on: req.db)
-        return appointment.toDTO()
-    }
-
-    /// PATCH /appointments/:id/isDone { "isDone": Bool }
-    func updateIsDoneById(req: Request) async throws -> AppointmentDTO {
-        struct Body: Content { let isDone: Bool }
-        let body = try req.content.decode(Body.self)
-        guard let idString = req.parameters.get("id"),
-              let id = UUID(uuidString: idString),
-              let appointment = try await Appointment.find(id, on: req.db) else {
-            throw Abort(.notFound)
-        }
-        appointment.isDone = body.isDone
-        try await appointment.update(on: req.db)
-        return appointment.toDTO()
-    }
-
     
     func next(req: Request) async throws -> AppointmentDTO {
         return try await req.db.transaction { db in
