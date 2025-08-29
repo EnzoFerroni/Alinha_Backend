@@ -15,17 +15,17 @@
 ## Rotas de usuário 
 
 
-* GET em …/users 
+### * GET em …/users 
 
 	* Retorna todos os usuários do aplicativo.
 	* Status Code de sucesso: 200 OK.
 
-* GET em …/users/:id
+### * GET em …/users/:id
   * Trocar “:id” pelo id do usuário que deseja buscar.
   * Status Code de sucesso: 200 OK.
   *  Caso onde o id do usuário não foi encontrado: 400 Bad Request.
 
-* POST em …/users 
+### * POST em …/users 
   * Cria um usuário no banco de dados.
   * Status Code de sucesso: 200 OK.
   * Caso de errar a confirmação de senha: 400 Bad Request.
@@ -54,30 +54,31 @@
 
 ```
 
-* DELETE em …/users/:id 
+### * DELETE em …/users/:id 
   * Deleta um usuário pelo id.
   * Trocar “:id” pelo id do usuário que deseja deletar.
   * Status Code de sucesso: 200 OK.
   * Caso onde o id do usuário não foi encontrado: 400 Bad Request.
 
-* PATCH em …/users/:updateName
+### * PATCH em …/users/:updateName
   * Atualiza o nome do usuário.
   * Status Code de sucesso: 200 OK.
   * Caso onde o id do usuário não foi encontrado: 400 Bad Request.
   * Formato do JSON:
+  
+  ``` json
+    { 
+        “id”: “UUID”,
+        “name”: “”,
+    } 
     
-```
-	{ 
-		“id”: “UUID”,
-		“name”: “”,
-	} 
-```
+  ```
+  
+  * JSON de resposta: 
+    
+``` json
 
-
-	* JSON de resposta: 
-```
-	
- { 
+    { 
 		“id”: “UUID”,
 		“name”: “”,
 		“email”: “”,
@@ -88,24 +89,24 @@
 
 ```
 
-Rotas de Agendamento
+## Rotas de agendamento 
 
-IP - 10.44.48.83:8080
+### * GET em …/:appointments 
+	* Retorna todos os agendamentos
+	* Status Code de sucesso: 200 OK.
 
-GET em …/:appointments 
-	— Retorna todos os agendamentos
-	— Status Code de sucesso: 200 OK.
+### * GET em …/appointments/:appointmentID
+	* Retorna um agendamento especifico
+	* Trocar “:appointmentID” pelo id do appointment que deseja buscar.
+	* Status Code de sucesso: 200 OK.
+	* Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
 
-GET em …/appointments/:appointmentID
-	— Retorna um agendamento especifico
-	— Trocar “:appointmentID” pelo id do appointment que deseja buscar.
-	— Status Code de sucesso: 200 OK.
-	— Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
-
-POST em …/:appointments 
-	— Cria um agendamento no banco de dados. 
-	— Status Code de sucesso: 200 OK.
-	— Formato do JSON: 
+### * POST em …/:appointments 
+	* Cria um agendamento no banco de dados. 
+	* Status Code de sucesso: 200 OK.
+	* Formato do JSON: 
+    
+    ``` json
 	{ 
 		“mentor”: “”,
 		“appointmentPlace”: “”,
@@ -117,11 +118,15 @@ POST em …/:appointments
 		“type”: “”,
 		“path":""
 	} 
+    
+```
+	* Opções de appointmentCategory: “code”, “design".
+	* Opções de appointmentType: “doubt”, “problem”.
+	* JSON de resposta: 
 
-	— Opções de appointmentCategory: “code”, “design".
-	— Opções de appointmentType: “doubt”, “problem”.
-	— JSON de resposta: 
-	{ 
+```	json
+
+    { 
 		“id”: "UUID"
 		“mentor”: “String”,
 		“studentID”: “UUID”,
@@ -134,19 +139,27 @@ POST em …/:appointments
 		“type”: "TypeAppointment",
 		“path":"PathAppointment"
 	} 
+    
+```
 
+### * PATCH em …/appointments/place
+	* Atualiza os locais de agendamento. 
+	* Status Code de sucesso: 200 OK.
+	* Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
+	* Formato do JSON: 
 
-PATCH em …/appointments/place
-	— Atualiza os locais de agendamento. 
-	— Status Code de sucesso: 200 OK.
-	— Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
-	— Formato do JSON: 
-	{ 
+```	json
+
+    { 
 		“appointmentId”: “UUID”,
 		“appointmentPlace”: “String”,
 	} 
-
-	— JSON de resposta: 
+    
+```
+	* JSON de resposta: 
+ 
+ ```json
+    
 	{ 
 		“id”: "UUID"
 		“mentor”: “String”,
@@ -160,21 +173,29 @@ PATCH em …/appointments/place
 		“type”: "TypeAppointment",
 		“path”:"PathAppointment"
 	}
+    
+```
 
 
+### * PATCH em …/appointments/isScheduled 
+	* Atualiza status do agendamento. 
+	* Status Code de sucesso: 200 OK.
+	* Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
+	* Formato do JSON: 
 
-PATCH em …/appointments/isScheduled 
-	— Atualiza status do agendamento. 
-	— Status Code de sucesso: 200 OK.
-	— Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
-	— Formato do JSON: 
-	{ 
+```json 	
+
+    { 
 		“appointmentId”: “UUID”,
 		“isScheduled”: “Bool”,
 	} 
+    
+```
+	* JSON de resposta: 
 
-	— JSON de resposta: 
-	{ 
+``` json	
+
+    { 
 		“id”: "UUID"
 		“mentor”: “String”,
 		“studentID”: “UUID”,
@@ -187,19 +208,25 @@ PATCH em …/appointments/isScheduled
 		“type”: "TypeAppointment",
 		“path":"PathAppointment"
 	}
+    
+```
 
-
-PATCH em …/appointments/callStudent 
-	— Atualiza status de chamada do estudante. 
-	— Status Code de sucesso: 200 OK.
-	— Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
-	— Formato do JSON: 
+### * PATCH em …/appointments/callStudent 
+	* Atualiza status de chamada do estudante. 
+	* Status Code de sucesso: 200 OK.
+	* Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
+	* Formato do JSON: 
+ 
+ ```json   
 	{ 
 		“appointmentId”: “UUID”,
 		“callStudent”: “Bool”,
 	} 
+```
 
-	— JSON de resposta: 
+	* JSON de resposta: 
+    
+ ```json   
 	{ 
 		“id”: "UUID"
 		“mentor”: “String”,
@@ -213,19 +240,23 @@ PATCH em …/appointments/callStudent
 		“type”: "TypeAppointment",
 		“path”:"PathAppointment"
 	}
+```
 
+### * PATCH em …/appointments/isDone 
+	* Atualiza status de chamada do estudante. 
+	* Status Code de sucesso: 200 OK.
+	* Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
+	* Formato do JSON: 
+```json 	
 
-PATCH em …/appointments/isDone 
-	— Atualiza status de chamada do estudante. 
-	— Status Code de sucesso: 200 OK.
-	— Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
-	— Formato do JSON: 
-	{ 
+    { 
 		“appointmentId”: “UUID”,
 		“isDone”: “Bool”,
 	} 
-
-	— JSON de resposta: 
+    
+```
+	* JSON de resposta: 
+ ``` json    
 	{ 
 		“id”: "UUID"
 		“mentor”: “String”,
@@ -239,20 +270,27 @@ PATCH em …/appointments/isDone
 		“type”: "TypeAppointment",
 		“path”:"PathAppointment"
 	}
+```
 
+### * PATCH em …/appointments/mentor 
+	* Atualiza o mentor ao qual o agendamento está associado. 
+	* Status Code de sucesso: 200 OK.
+	* Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
+	* Formato do JSON: 
 
-PATCH em …/appointments/mentor 
-	— Atualiza o mentor ao qual o agendamento está associado. 
-	— Status Code de sucesso: 200 OK.
-	— Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
-	— Formato do JSON: 
-	{ 
+```json 	
+
+    { 
 		“appointmentId”: “UUID”,
 		“mentor”: “User”,
 	} 
+    
+```
+	* JSON de resposta: 
+    
+``` json 	
 
-	— JSON de resposta: 
-	{ 
+    { 
 		“id”: "UUID"
 		“mentor”: “String”,
 		“studentID”: “UUID”,
@@ -265,12 +303,13 @@ PATCH em …/appointments/mentor
 		“type”: "TypeAppointment",
 		“path”:"PathAppointment"	
 	} 
-	
+    
+```	
 
-DELETE em …/appointments/:appointmentID 
-	— Trocar “:appointmentID” pelo id do agendamento que deseja deletar.
-	— Status Code de sucesso: 200 OK.
-	— Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
+### * DELETE em …/appointments/:appointmentID 
+	* Trocar “:appointmentID” pelo id do agendamento que deseja deletar.
+	* Status Code de sucesso: 200 OK.
+	* Caso onde o id do agendamento não foi encontrado: 400 Bad Request.
 
 
 
