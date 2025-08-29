@@ -33,8 +33,8 @@ final class User: Model, @unchecked Sendable, Content{
     @Enum(key: "role")
     var role: UserRole
     
-    @OptionalChild(for: \.$student)
-    var appointmentStudent: Appointment?
+    @Children(for: \Appointment.$student)
+    var appointments: [Appointment]
 
     
     ///Class constructor
