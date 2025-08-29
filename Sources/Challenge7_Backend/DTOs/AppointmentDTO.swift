@@ -16,6 +16,8 @@ struct AppointmentDTO: Content {
     var mentor: String?
     /// Student user associated with the appointment.
     var student: User.IDValue?
+    ///Appointment description
+    var description: String?
     /// Place where the appointment will occur.
     var appointmentPlace: String?
     /// Indicates if the appointment is scheduled.
@@ -26,6 +28,10 @@ struct AppointmentDTO: Content {
     var isDone: Bool?
     /// Date and time when the appointment was created.
     var createdAt: Date?
+    ///Appointment type
+    var type: TypeAppointment?
+    ///Appointment path
+    var path: PathAppointment?
 }
 
 extension AppointmentDTO {
@@ -48,12 +54,5 @@ extension AppointmentDTO {
     struct UpdateDone : Content {
         var appointmentId: UUID
         var isDone: Bool
-    }
-    
-    struct CreateRequest: Content {
-        var name: String
-        var mentor: String
-        var student: User
-        var appointmentPlaces: String
     }
 }
