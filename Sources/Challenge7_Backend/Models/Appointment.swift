@@ -24,6 +24,8 @@ final class Appointment: Model, @unchecked Sendable {
     @Field(key: "mentor")
     var mentor: String
     
+    @Field(key: "description")
+    var description: String
     /// The place where the appointment will occur.
     @Field(key: "appointmentPlace")
     var appointmentPlace: String
@@ -39,6 +41,13 @@ final class Appointment: Model, @unchecked Sendable {
     /// The date and time when the appointment was created.
     @Timestamp(key: "createdAt", on: .create)
     var createdAt: Date?
+    
+    @Enum(key: "type")
+    var type: TypeAppointment
+    
+    @Enum(key: "path")
+    var path: PathAppointment
+    
     /// Default initializer.
     init() { }
     
@@ -55,15 +64,18 @@ final class Appointment: Model, @unchecked Sendable {
     ///    - isDone: Whether the appointment is done.
     ///    - createdAt: The creation date of the appointment.
     
-    init(id: UUID? = nil, mentor: String, appointmentPlace: String,student: User,  isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date? = nil) {
+    init(id: UUID? = nil, mentor: String,description: String, appointmentPlace: String,student: User,  isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date? = nil, type: TypeAppointment, path: PathAppointment) {
         self.id = id
         self.mentor = mentor
         self.student = student
+        self.description = description
         self.appointmentPlace = appointmentPlace
         self.isScheduled = isScheduled
         self.callStudent = callStudent
         self.isDone = isDone
         self.createdAt = createdAt
+        self.type = type
+        self.path = path
     }
     
     /// Converts the Appointment model to its corresponding DTO.
@@ -73,11 +85,14 @@ final class Appointment: Model, @unchecked Sendable {
             id: self.id,
             mentor: self.mentor,
             student: self.$student.id,
+            description: self.description,
             appointmentPlace: self.$appointmentPlace.value,
             isScheduled: self.$isScheduled.value,
             callStudent: self.$callStudent.value,
             isDone: self.$isDone.value,
-            createdAt: self.$createdAt.value ?? Date.now
+            createdAt: self.$createdAt.value ?? Date.now,
+            type: self.$type.value,
+            path: self.$path.value
         )
     }
 }

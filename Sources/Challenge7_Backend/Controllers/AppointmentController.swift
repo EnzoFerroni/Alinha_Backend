@@ -7,6 +7,7 @@
 
 import Fluent
 import Vapor
+import Foundation
 
 /// Controller for managing Appointment resources and their API endpoints.
 struct AppointmentController: RouteCollection {
@@ -80,8 +81,20 @@ struct AppointmentController: RouteCollection {
         let input = try req.content.decode(AppointmentDTO.self)
 
         // Validate required business fields locally to avoid ! crashes
-        guard let place = input.appointmentPlace, !place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        guard let place = input.appointmentPlace, !place.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
             throw Abort(.badRequest, reason: "appointmentPlace is required")
+        }
+        
+        guard let description = input.description, !description.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
+            throw Abort(.badRequest, reason: "appointment desc is required")
+        }
+        
+        guard let typeEnum = input.type else {
+            throw Abort(.badRequest, reason: "invalid or missing type")
+        }
+        
+        guard let pathEnum = input.path else {
+            throw Abort(.badRequest, reason: "invalid or missing path")
         }
         
         guard let user = try await User.find(input.student, on: req.db)else{
@@ -91,12 +104,16 @@ struct AppointmentController: RouteCollection {
         // Server authority for queue semantics — set parent by ID to avoid eager-load pitfalls
         let userId = try user.requireID()
         let model = Appointment()
+        
         model.mentor = input.mentor ?? "EMPTY MENTOR"
         model.appointmentPlace = place
+        model.description = description
         model.$student.id = userId
         model.isScheduled = false   // start waiting in queue
         model.callStudent = false
         model.isDone = false
+        model.type = typeEnum
+        model.path = pathEnum
         // createdAt is handled automatically by @Timestamp(on: .create)
         try await model.save(on: req.db)
         return model.toDTO()
