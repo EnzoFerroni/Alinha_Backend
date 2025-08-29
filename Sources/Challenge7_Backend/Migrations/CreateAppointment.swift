@@ -16,14 +16,14 @@ struct CreateAppointment: AsyncMigration {
             .case("unknown")
             .create()
         
-        let typeAppointment = try await database.enum("path_appointment").read()
+        let pathAppointment = try await database.enum("path_appointment").read()
         
         try await database.enum("type_appointment")
             .case("problem")
             .case("doubt")
             .create()
         
-        let pathAppointment = try await database.enum("type_appointment").read()
+        let typeAppointment = try await database.enum("type_appointment").read()
         
         try await database.schema("TB_appointments")
             .id()
