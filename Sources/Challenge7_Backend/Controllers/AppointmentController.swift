@@ -17,7 +17,8 @@ struct AppointmentController: RouteCollection {
         let appointments = routes.grouped("appointments")
         
         // Only mentors OR admins can mutate appointments or call next
-        let protected = appointments.grouped(AdmMentorMiddleware())
+        let authenticated = appointments.grouped(User.authenticator())
+        let protected = authenticated.grouped(AdmMentorMiddleware())
         
         appointments.get(use: index)
         appointments.post(use: create)
@@ -30,7 +31,9 @@ struct AppointmentController: RouteCollection {
         
         appointments.group(":id") { appointment in
             appointment.get(use: show)
-            let secured = appointment.grouped(AdmMentorMiddleware())
+            // Corrigir: adicionar autenticação antes do middleware de autorização
+            let authenticatedId = appointment.grouped(User.authenticator())
+            let secured = authenticatedId.grouped(AdmMentorMiddleware())
             secured.delete(use: delete)
             secured.patch("place", use: updatePlaceById)
             secured.patch("isScheduled", use: updateScheduledById)
