@@ -25,6 +25,7 @@ struct AppointmentController: RouteCollection {
         protected.patch("isScheduled", use: updateScheduled)
         protected.patch("callStudent", use: updateCallStudent)
         protected.patch("isDone", use: updateIsDone)
+        protected.patch("mentor", use: updateMentor)
         protected.post("next", use: next)
         
         appointments.group(":id") { appointment in
@@ -175,6 +176,19 @@ struct AppointmentController: RouteCollection {
             throw Abort(.notFound)
         }
         appointment.isDone = create.isDone
+        try await appointment.update(on: req.db)
+       
+        return appointment.toDTO()
+    }
+    
+    /// Updates the done status of an appointment.
+    /// - Returns: The updated appointment DTO.
+    func updateMentor(req: Request) async throws -> AppointmentDTO {
+        let create = try req.content.decode(AppointmentDTO.UpdateMentor.self)
+        guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        appointment.mentor = create.mentor
         try await appointment.update(on: req.db)
        
         return appointment.toDTO()

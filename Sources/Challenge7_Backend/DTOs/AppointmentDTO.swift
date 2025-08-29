@@ -55,4 +55,9 @@ extension AppointmentDTO {
         var appointmentId: UUID
         var isDone: Bool
     }
+    /// DTO for updating the done status of an appointment.
+    struct UpdateMentor : Content {
+        var appointmentId: UUID
+        var mentor: String
+    }
 }
