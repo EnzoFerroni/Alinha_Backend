@@ -88,19 +88,16 @@ struct AppointmentController: RouteCollection {
             throw Abort(.badRequest, reason: "user unfound")
         }
         
-        // Mentor remains optional; prefer storing an ID in the model if available
-        let mentor = input.mentor
-
-        // Server authority for queue semantics
-        let model = Appointment(
-            mentor: input.mentor ?? "EMPTY MENTOR",
-            appointmentPlace: input.appointmentPlace ?? "LOCAL UNDEFINED",
-            student: user,
-            isScheduled: false, // start waiting in queue
-            callStudent: false,
-            isDone: false,
-            createdAt: Date()   // server timestamp
-        )
+        // Server authority for queue semantics — set parent by ID to avoid eager-load pitfalls
+        let userId = try user.requireID()
+        let model = Appointment()
+        model.mentor = input.mentor ?? "EMPTY MENTOR"
+        model.appointmentPlace = place
+        model.$student.id = userId
+        model.isScheduled = false   // start waiting in queue
+        model.callStudent = false
+        model.isDone = false
+        // createdAt is handled automatically by @Timestamp(on: .create)
         try await model.save(on: req.db)
         return model.toDTO()
     }

@@ -18,7 +18,7 @@ final class Appointment: Model, @unchecked Sendable {
     var id: UUID?
     
     /// The student associated with the appointment.
-    @Parent(key: "user_id")
+    @Parent(key: "student_id")
     var student: User
     
     @Field(key: "mentor")
@@ -28,13 +28,13 @@ final class Appointment: Model, @unchecked Sendable {
     @Field(key: "appointmentPlace")
     var appointmentPlace: String
     /// Indicates if the appointment is scheduled.
-    @Boolean(key: "isScheduled")
+    @Field(key: "isScheduled")
     var isScheduled: Bool
     /// Indicates if the student should be called for the appointment.
-    @Boolean(key: "callStudent")
+    @Field(key: "callStudent")
     var callStudent: Bool
     /// Indicates if the appointment is done.
-    @Boolean(key: "isDone")
+    @Field(key: "isDone")
     var isDone: Bool
     /// The date and time when the appointment was created.
     @Timestamp(key: "createdAt", on: .create)
@@ -72,7 +72,7 @@ final class Appointment: Model, @unchecked Sendable {
         .init (
             id: self.id,
             mentor: self.mentor,
-            student: self.student.id,
+            student: self.$student.id,
             appointmentPlace: self.$appointmentPlace.value,
             isScheduled: self.$isScheduled.value,
             callStudent: self.$callStudent.value,
