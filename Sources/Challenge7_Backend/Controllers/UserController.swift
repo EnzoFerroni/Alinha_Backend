@@ -16,31 +16,21 @@ struct UserController: RouteCollection{
     func boot(routes: any RoutesBuilder) throws{
         let users = routes.grouped("users")
         
-        let authenticated = users.grouped(User.authenticator())
-        let protected = authenticated.grouped(AdminOnlyMiddleware())
-        
         users.get(use: index)
         users.post(use: create)
+        users.patch("updateName", use: updateUserName)
         users.group(":id"){ user in
             let authenticatedId = user.grouped(User.authenticator())
             let secured = authenticatedId.grouped(AdminOnlyMiddleware())
             user.get(use: show)
-            protected.delete(use: delete)
+            secured.delete(use: delete)
         }
         let passwordProtected = users.grouped(User.authenticator())
         passwordProtected.post("login") { req -> User in
             try req.auth.require(User.self)
         }
         
-        users.group("id"){user in
-            user.get("me", use: show)
-            let authenticatedId = user.grouped(User.authenticator())
-            let secured = authenticatedId.grouped(AdminOnlyMiddleware())
-            secured.delete(use: delete)
-            
-        }
         
-        users.patch("updateName", use: updateUserName)
         
     }
     
