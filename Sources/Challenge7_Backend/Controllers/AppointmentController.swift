@@ -27,7 +27,6 @@ struct AppointmentController: RouteCollection {
         protected.patch("callStudent", use: updateCallStudent)
         protected.patch("isDone", use: updateIsDone)
         protected.patch("mentor", use: updateMentor)
-        protected.post("next", use: next)
         
         appointments.group(":id") { appointment in
             appointment.get(use: show)
