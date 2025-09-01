@@ -201,20 +201,4 @@ struct AppointmentController: RouteCollection {
         try await appointment.delete(on: req.db)
         return "Appointment deleted."
     }
-    
-    func next(req: Request) async throws -> AppointmentDTO {
-        return try await req.db.transaction { db in
-            // Oldest waiting = not done & not scheduled
-            guard let appt = try await Appointment.query(on: db)
-                .filter(\.$isDone == false)
-                .filter(\.$isScheduled == false)
-                .sort(\.$createdAt, .ascending)
-                .first() else {
-                throw Abort(.notFound, reason: "No waiting appointments")
-            }
-            appt.isScheduled = true
-            try await appt.update(on: db)
-            return appt.toDTO()
-        }
-    }
 }
