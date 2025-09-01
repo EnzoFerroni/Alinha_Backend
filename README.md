@@ -350,7 +350,7 @@
         <img src="https://skillicons.dev/icons?i=linkedin" alt="LinkedIn" height="20"/>
       </a>
     </td>
-    <td>Enzo Ferronin</td>
+    <td>Enzo Ferroni</td>
   </tr>
   <tr>
     <td align="center">
