@@ -22,6 +22,8 @@ struct UserController: RouteCollection{
         users.get(use: index)
         users.post(use: create)
         users.group(":id"){ user in
+            let authenticatedId = user.grouped(User.authenticator())
+            let secured = authenticatedId.grouped(AdminOnlyMiddleware())
             user.get(use: show)
             protected.delete(use: delete)
         }
