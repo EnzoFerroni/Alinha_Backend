@@ -30,10 +30,10 @@ public func configure(_ app: Application) async throws {
 
     let appleECP8PrivateKey = """
         -----BEGIN PRIVATE KEY-----
-        MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg3dypZW1jdoObxEBg
-        AeiSkeCgIJxVvL/UmdGIeh1NA4KgCgYIKoZIzj0DAQehRANCAAQnPyDqSJkQy7Ra
-        OrtPnFWQ7s98R/MpVxs2rQVw1a48IUmLTfkXpfec1eMVBei+TJchrpP+lIOD48te
-        yjI7bdEa
+        MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgHm5pSYg03FAnkaew
+        brZd99yVPAe6PLPCIMJNzAjjfMygCgYIKoZIzj0DAQehRANCAAQxATK1YxQN1pQF
+        FnOxRk88UFJWidQ5rSJK3L7B0USIHPrE7icZpihcYTnr2FhzM5JJhRp/Woaj6BIG
+        8EqLy1VC
         -----END PRIVATE KEY-----
         """
     
@@ -41,8 +41,8 @@ public func configure(_ app: Application) async throws {
     let apnsConfig = APNSClientConfiguration(
         authenticationMethod: .jwt(
             privateKey: try .loadFrom(string: appleECP8PrivateKey),
-            keyIdentifier: "6C9K22WRJY",
-            teamIdentifier: "Carolina Sun Ramos Nantes de Castilho"
+            keyIdentifier: "BXSL76YQ56",
+            teamIdentifier: "Renata Leal"
         ),
         environment: .development
     )
@@ -52,25 +52,6 @@ public func configure(_ app: Application) async throws {
         responseDecoder: JSONDecoder(),
         requestEncoder: JSONEncoder(),
         as: .default
-    )
-    
-    // Custom Codable Payload
-    struct Payload: Codable {
-        let acme1: String
-        let acme2: Int
-    }
-    // Create push notification Alert
-    let dt = "70075697aa918ebddd64efb165f5b9cb92ce095f1c4c76d995b384c623a258bb"
-    let payload = Payload(acme1: "hey", acme2: 2)
-    let alert = APNSAlertNotification(
-        alert: .init(
-            title: .raw("Hello"),
-            subtitle: .raw("This is a test from vapor/apns")
-        ),
-        expiration: .immediately,
-        priority: .immediately,
-        topic: "<#my topic#>",
-        payload: payload
     )
     
     app.middleware.use(cors, at: .beginning)

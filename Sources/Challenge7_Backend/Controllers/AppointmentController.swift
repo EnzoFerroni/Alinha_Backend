@@ -87,6 +87,10 @@ struct AppointmentController: RouteCollection {
             throw Abort(.badRequest, reason: "appointment desc is required")
         }
         
+        guard let deviceToken = input.deviceToken, !deviceToken.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
+            throw Abort(.badRequest, reason: "appointment desc is required")
+        }
+        
         guard let typeEnum = input.type else {
             throw Abort(.badRequest, reason: "invalid or missing type")
         }
@@ -110,6 +114,7 @@ struct AppointmentController: RouteCollection {
         model.isScheduled = false   // start waiting in queue
         model.callStudent = false
         model.isDone = false
+        model.deviceToken = deviceToken
         model.type = typeEnum
         model.path = pathEnum
         // createdAt is handled automatically by @Timestamp(on: .create)
@@ -172,9 +177,14 @@ struct AppointmentController: RouteCollection {
         guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
+
         appointment.isDone = create.isDone
         try await appointment.update(on: req.db)
-       
+        
+        try! await req.apns.client.sendAlertNotification(
+            alert,
+            deviceToken: token,
+        )
         return appointment.toDTO()
     }
     
