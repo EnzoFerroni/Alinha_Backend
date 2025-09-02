@@ -38,8 +38,6 @@ struct CreateAppointment: AsyncMigration {
             .field("createdAt", .datetime)
             .field("type", typeAppointment, .required)
             .field("path", pathAppointment, .required)
-            .unique(on: "deviceToken")
-        
             .create()
     }
     

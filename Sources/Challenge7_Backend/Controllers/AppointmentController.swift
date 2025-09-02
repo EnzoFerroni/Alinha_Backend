@@ -88,7 +88,7 @@ struct AppointmentController: RouteCollection {
         }
         
         guard let deviceToken = input.deviceToken, !deviceToken.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
-            throw Abort(.badRequest, reason: "appointment desc is required")
+            throw Abort(.badRequest, reason: "device desc is required")
         }
         
         guard let typeEnum = input.type else {
@@ -165,14 +165,25 @@ struct AppointmentController: RouteCollection {
             throw Abort(.notFound)
         }
         appointment.callStudent = create.callStudent
-        try await appointment.update(on: req.db)
 
+        do {
+            try await req.apns.client.sendAlertNotification(
+                alert,
+                deviceToken: appointment.deviceToken
+            )
+        }
+        catch {
+            throw Abort(.forbidden)
+        }
+        
+        try await appointment.update(on: req.db)
         return appointment.toDTO()
     }
     
     /// Updates the done status of an appointment.
     /// - Returns: The updated appointment DTO.
     func updateIsDone(req: Request) async throws -> AppointmentDTO {
+        
         let create = try req.content.decode(AppointmentDTO.UpdateDone.self)
         guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
@@ -181,10 +192,6 @@ struct AppointmentController: RouteCollection {
         appointment.isDone = create.isDone
         try await appointment.update(on: req.db)
         
-        try! await req.apns.client.sendAlertNotification(
-            alert,
-            deviceToken: token,
-        )
         return appointment.toDTO()
     }
     

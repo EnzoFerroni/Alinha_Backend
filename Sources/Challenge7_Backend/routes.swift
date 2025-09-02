@@ -10,10 +10,10 @@ func routes(_ app: Application) throws {
         "Hello, world!"
     }
 
-    app.get("test-push") { req async throws -> HTTPStatus in
-        try await req.apns.client.sendAlertNotification(alert, deviceToken: token)
-        return .ok
-    }
+//    app.get("test-push") { req async throws -> HTTPStatus in
+//        try await req.apns.client.sendAlertNotification(alert, deviceToken: token)
+//        return .ok
+//    }
     
     try app.register(collection: UserController())
     try app.register(collection: AppointmentController())

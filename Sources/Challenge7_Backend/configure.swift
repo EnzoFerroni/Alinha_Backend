@@ -42,7 +42,7 @@ public func configure(_ app: Application) async throws {
         authenticationMethod: .jwt(
             privateKey: try .loadFrom(string: appleECP8PrivateKey),
             keyIdentifier: "BXSL76YQ56",
-            teamIdentifier: "Renata Leal"
+            teamIdentifier: "Jonas Melo"
         ),
         environment: .development
     )
