@@ -166,15 +166,15 @@ struct AppointmentController: RouteCollection {
         }
         appointment.callStudent = create.callStudent
 
-        do {
-            try await req.apns.client.sendAlertNotification(
-                alert,
-                deviceToken: appointment.deviceToken
-            )
-        }
-        catch {
-            throw Abort(.forbidden)
-        }
+//        do {
+//            try await req.apns.client.sendAlertNotification(
+//                alert,
+//                deviceToken: appointment.deviceToken
+//            )
+//        }
+//        catch {
+//            throw Abort(.forbidden)
+//        }
         
         try await appointment.update(on: req.db)
         return appointment.toDTO()
