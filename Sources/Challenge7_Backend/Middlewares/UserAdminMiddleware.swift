@@ -9,4 +9,3 @@ struct AdminOnlyMiddleware: Middleware {
         return next.respond(to: req)
     }
 }
-

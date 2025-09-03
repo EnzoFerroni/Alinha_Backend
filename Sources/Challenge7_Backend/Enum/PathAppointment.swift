@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+///Enumerates different appointment categories
 enum PathAppointment: String, Codable {
     case code
     case design

@@ -13,17 +13,17 @@ import Foundation
 final class Appointment: Model, @unchecked Sendable {
     /// The schema name for the appointments table.
     static let schema = "TB_appointments"
+    
     /// Unique identifier for an appointment.
     @ID(key: .id)
     var id: UUID?
-    
     /// The student associated with the appointment.
     @Parent(key: "student_id")
     var student: User
-    
+    /// The mentor associated with the appointment.
     @Field(key: "mentor")
     var mentor: String
-    
+    /// The appointment's description provided by the user.
     @Field(key: "description")
     var description: String
     /// The place where the appointment will occur.
@@ -38,16 +38,16 @@ final class Appointment: Model, @unchecked Sendable {
     /// Indicates if the appointment is done.
     @Field(key: "isDone")
     var isDone: Bool
-    
+    /// Indicates if the device that will receive notifications.
     @Field(key: "deviceToken")
     var deviceToken: String
     /// The date and time when the appointment was created.
     @Timestamp(key: "createdAt", on: .create)
     var createdAt: Date?
-    
+    /// The appointment type.
     @Enum(key: "type")
     var type: TypeAppointment
-    
+    /// The appointment category.
     @Enum(key: "path")
     var path: PathAppointment
     
@@ -66,7 +66,6 @@ final class Appointment: Model, @unchecked Sendable {
     ///    - callStudent: Whether to call the student.
     ///    - isDone: Whether the appointment is done.
     ///    - createdAt: The creation date of the appointment.
-    
     init(id: UUID? = nil, mentor: String,description: String, appointmentPlace: String,student: User,  isScheduled: Bool, callStudent: Bool, isDone: Bool, deviceToken: String, createdAt: Date? = nil, type: TypeAppointment, path: PathAppointment) {
         self.id = id
         self.mentor = mentor
