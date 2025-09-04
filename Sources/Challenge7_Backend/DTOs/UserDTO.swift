@@ -41,6 +41,11 @@ extension UserDTO {
         var role: UserRole
     }
     
+    struct UpdateAvaliableRequest: Content, Decodable {
+        var id: UUID
+        var avaliable: Bool
+    }
+    
 
     struct Login : Content {
         var email: String
