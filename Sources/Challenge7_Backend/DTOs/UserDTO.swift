@@ -32,7 +32,14 @@ extension UserDTO {
         var id: UUID
         var name: String
     }
-    ///Body login requisition
+
+    
+    struct UpdateRoleRequest: Content, Decodable {
+        var id: UUID
+        var role: UserRole
+    }
+    
+
     struct Login : Content {
         var email: String
         var password: String
