@@ -83,11 +83,8 @@ final class Appointment: Model, @unchecked Sendable {
         self.isScheduled = isScheduled
         self.callStudent = callStudent
         self.isDone = isDone
-
         self.studentName = studentName
-
         self.deviceToken = deviceToken
-
         self.createdAt = createdAt
         self.type = type
         self.path = path
@@ -105,11 +102,8 @@ final class Appointment: Model, @unchecked Sendable {
             isScheduled: self.$isScheduled.value,
             callStudent: self.$callStudent.value,
             isDone: self.$isDone.value,
-
             studentName: self.$studentName.value,
-
             deviceToken: self.$deviceToken.value,
-
             createdAt: self.$createdAt.value ?? Date.now,
             type: self.$type.value,
             path: self.$path.value

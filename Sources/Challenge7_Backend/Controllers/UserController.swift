@@ -59,6 +59,7 @@ struct UserController: RouteCollection{
         let user = try User(
             name: create.name,
             email: create.email,
+            avaliable: false,
             password: Bcrypt.hash(create.password),
             role: create.role
         )

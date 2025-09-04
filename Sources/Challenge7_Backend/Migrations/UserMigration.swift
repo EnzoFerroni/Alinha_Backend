@@ -25,6 +25,7 @@ struct UserMigration: AsyncMigration {
             .field("name", .string, .required)
             .field("email", .string, .required)
             .field("password", .string, .required)
+            .field("avaliable", .bool, .required, .sql(.default(false)))
             .field("role", userRole, .required)
             .unique(on: "email")
             .create()
