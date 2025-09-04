@@ -8,6 +8,10 @@
 import Fluent
 import Vapor
 import Foundation
+import APNSCore
+
+/// Minimal payload for APNs alert notifications
+private struct EmptyPayload: Codable {}
 
 /// Controller for managing Appointment resources and their API endpoints.
 struct AppointmentController: RouteCollection {
@@ -166,15 +170,39 @@ struct AppointmentController: RouteCollection {
         }
         appointment.callStudent = create.callStudent
 
-//        do {
-//            try await req.apns.client.sendAlertNotification(
-//                alert,
-//                deviceToken: appointment.deviceToken
-//            )
-//        }
-//        catch {
-//            throw Abort(.forbidden)
-//        }
+        // If the mentor toggled callStudent to true, send a push
+        if create.callStudent {
+            guard let topic = Environment.get("APNS_TOPIC") else {
+                req.logger.critical("Missing env var APNS_TOPIC (Bundle Identifier)")
+                throw Abort(.internalServerError)
+            }
+
+            let alert = APNSAlertNotification(
+                alert: .init(
+                    title: .raw("Você foi chamado!"),
+                    body: .raw("Vá para: \(appointment.appointmentPlace)")
+                ),
+                expiration: .immediately,
+                priority: .immediately,
+                topic: topic,
+                payload: EmptyPayload()
+            )
+
+            let token = appointment.deviceToken
+                .replacingOccurrences(of: " ", with: "")
+                .replacingOccurrences(of: "<", with: "")
+                .replacingOccurrences(of: ">", with: "")
+
+            do {
+                try await req.apns.client.sendAlertNotification(
+                    alert,
+                    deviceToken: token
+                )
+            } catch {
+                req.logger.report(error: error)
+                throw Abort(.failedDependency, reason: "Failed to send APNs notification: \(error.localizedDescription)")
+            }
+        }
         
         try await appointment.update(on: req.db)
         return appointment.toDTO()

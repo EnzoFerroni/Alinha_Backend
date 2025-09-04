@@ -23,28 +23,33 @@ public func configure(_ app: Application) async throws {
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .all,
         allowedMethods: [.GET, .POST, .PUT, .PATCH, .DELETE],
-        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin]
+        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent]
     )
     
     let cors = CORSMiddleware(configuration: corsConfiguration)
 
-    let appleECP8PrivateKey = """
-        -----BEGIN PRIVATE KEY-----
-        MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgHm5pSYg03FAnkaew
-        brZd99yVPAe6PLPCIMJNzAjjfMygCgYIKoZIzj0DAQehRANCAAQxATK1YxQN1pQF
-        FnOxRk88UFJWidQ5rSJK3L7B0USIHPrE7icZpihcYTnr2FhzM5JJhRp/Woaj6BIG
-        8EqLy1VC
-        -----END PRIVATE KEY-----
-        """
-    
+    //TODO: ATUALIZAR CREDENCIAIS E VALORES DOS ID
+    // APNs credentials
+    let apnsPrivateKey = """
+    -----BEGIN PRIVATE KEY-----
+    MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgHm5pSYg03FAnkaew
+    brZd99yVPAe6PLPCIMJNzAjjfMygCgYIKoZIzj0DAQehRANCAAQxATK1YxQN1pQF
+    FnOxRk88UFJWidQ5rSJK3L7B0USIHPrE7icZpihcYTnr2FhzM5JJhRp/Woaj6BIG
+    8EqLy1VC
+    -----END PRIVATE KEY-----
+    """
+    let apnsKeyId = "MUDAR"      // 10-char Key ID
+    let apnsTeamId = "TAMBEM"     // 10-char Team ID
+    let apnsEnvironment: APNSEnvironment = .development
+
     // Configure APNS using JWT authentication.
     let apnsConfig = APNSClientConfiguration(
         authenticationMethod: .jwt(
-            privateKey: try .loadFrom(string: appleECP8PrivateKey),
-            keyIdentifier: "BXSL76YQ56",
-            teamIdentifier: "Jonas Melo"
+            privateKey: try .loadFrom(string: apnsPrivateKey),
+            keyIdentifier: apnsKeyId,
+            teamIdentifier: apnsTeamId
         ),
-        environment: .development
+        environment: apnsEnvironment
     )
     app.apns.containers.use(
         apnsConfig,
