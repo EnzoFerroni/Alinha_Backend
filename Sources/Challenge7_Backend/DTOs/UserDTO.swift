@@ -19,6 +19,7 @@ struct UserDTO: Authenticatable, Content {
 }
 
 extension UserDTO {
+    ///Body of post user requisition
     struct Create: Content {
         var name: String
         var email: String
@@ -26,17 +27,19 @@ extension UserDTO {
         var confirmedPassword: String
         var role: UserRole
     }
-    
+    ///Body of patch updateName requisition
     struct UpdateNameRequest: Content, Decodable {
         var id: UUID
         var name: String
     }
+
     
     struct UpdateRoleRequest: Content, Decodable {
         var id: UUID
         var role: UserRole
     }
     
+
     struct Login : Content {
         var email: String
         var password: String
@@ -58,4 +61,3 @@ extension UserDTO.Login: Validatable {
         validations.add("password", as: String.self, is: .count(8...))
     }
 }
-

@@ -6,11 +6,8 @@
 //
 
 import Foundation
-
+///Enumerates different appointment types
 enum TypeAppointment: String, Codable {
     case problem
     case doubt
 }
-
-
-

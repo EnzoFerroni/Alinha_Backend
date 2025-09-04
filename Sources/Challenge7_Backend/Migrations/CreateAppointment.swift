@@ -34,10 +34,10 @@ struct CreateAppointment: AsyncMigration {
             .field("isScheduled", .bool, .required, .sql(.default(false)))
             .field("callStudent", .bool, .required, .sql(.default(false)))
             .field("isDone", .bool, .required, .sql(.default(false)))
+            .field("deviceToken", . string, .required)
             .field("createdAt", .datetime)
             .field("type", typeAppointment, .required)
             .field("path", pathAppointment, .required)
-        
             .create()
     }
     

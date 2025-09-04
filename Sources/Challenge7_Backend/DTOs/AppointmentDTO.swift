@@ -26,6 +26,8 @@ struct AppointmentDTO: Content {
     var callStudent: Bool?
     /// Indicates if the appointment is done.
     var isDone: Bool?
+    /// Indicates the token of the device that will receive the notifications.
+    var deviceToken: String?
     /// Date and time when the appointment was created.
     var createdAt: Date?
     ///Appointment type
