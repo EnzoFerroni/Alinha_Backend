@@ -101,7 +101,7 @@ final class Appointment: Model, @unchecked Sendable {
             mentor: self.mentor,
             student: self.$student.id,
             description: self.description,
-            appointmentPlace: self.$appointmentPlace.value,
+            appointmentPlace: self.appointmentPlace,
             isScheduled: self.$isScheduled.value,
             callStudent: self.$callStudent.value,
             isDone: self.$isDone.value,

@@ -82,11 +82,6 @@ struct AppointmentController: RouteCollection {
         // Decode a broad DTO but DO NOT trust client flags or createdAt
         let input = try req.content.decode(AppointmentDTO.self)
 
-        // Validate required business fields locally to avoid ! crashes
-        guard let place = input.appointmentPlace, !place.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
-            throw Abort(.badRequest, reason: "appointmentPlace is required")
-        }
-        
         guard let description = input.description, !description.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
             throw Abort(.badRequest, reason: "appointment desc is required")
         }
@@ -111,8 +106,8 @@ struct AppointmentController: RouteCollection {
         let userId = try user.requireID()
         let model = Appointment()
         
-        model.mentor = input.mentor ?? "EMPTY MENTOR"
-        model.appointmentPlace = place
+        model.mentor = input.mentor ?? ""
+        model.appointmentPlace = input.appointmentPlace ?? ""
         model.description = description
         model.$student.id = userId
         model.isScheduled = false   // start waiting in queue
