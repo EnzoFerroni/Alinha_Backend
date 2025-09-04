@@ -113,11 +113,8 @@ struct AppointmentController: RouteCollection {
         model.isScheduled = false   // start waiting in queue
         model.callStudent = false
         model.isDone = false
-
         model.studentName = user.name
-
         model.deviceToken = deviceToken
-
         model.type = typeEnum
         model.path = pathEnum
         // createdAt is handled automatically by @Timestamp(on: .create)
@@ -163,16 +160,23 @@ struct AppointmentController: RouteCollection {
     /// Updates the callStudent status of an appointment.
     /// - Returns: The updated appointment DTO.
     func updateCallStudent(req: Request) async throws -> AppointmentDTO {
+        // Pega o usuário autenticado (quem chamou a rota)
+        let currentUser = try req.auth.require(User.self)
+
         let create = try req.content.decode(AppointmentDTO.UpdateCallStudent.self)
         guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
+
+
         appointment.callStudent = create.callStudent
 
-        // If the mentor toggled callStudent to true, send a push
         if create.callStudent {
-            let topic = ".com.renataLeal.Front"
+            appointment.isScheduled = true
+            appointment.mentor = currentUser.name
 
+            
+            let topic = ".com.renataLeal.Front"
             let alert = APNSAlertNotification(
                 alert: .init(
                     title: .raw("Você foi chamado!"),
@@ -190,16 +194,14 @@ struct AppointmentController: RouteCollection {
                 .replacingOccurrences(of: ">", with: "")
 
             do {
-                try await req.apns.client.sendAlertNotification(
-                    alert,
-                    deviceToken: token
-                )
+                try await req.apns.client.sendAlertNotification(alert, deviceToken: token)
             } catch {
                 req.logger.report(error: error)
-                throw Abort(.failedDependency, reason: "Failed to send APNs notification: \(error.localizedDescription)")
+                throw Abort(.failedDependency,
+                            reason: "Failed to send APNs notification: \(error.localizedDescription)")
             }
         }
-        
+
         try await appointment.update(on: req.db)
         return appointment.toDTO()
     }
