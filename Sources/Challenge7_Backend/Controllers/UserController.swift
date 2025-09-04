@@ -19,11 +19,15 @@ struct UserController: RouteCollection{
         users.get(use: index)
         users.post(use: create)
         users.patch("updateName", use: updateUserName)
+        let authenticatedId = users.grouped(User.authenticator())
+        let secured = authenticatedId.grouped(AdminOnlyMiddleware())
+        secured.patch("updateRole", use: updateUserRole)
         users.group(":id"){ user in
             let authenticatedId = user.grouped(User.authenticator())
             let secured = authenticatedId.grouped(AdminOnlyMiddleware())
             user.get(use: show)
             secured.delete(use: delete)
+            
         }
         let passwordProtected = users.grouped(User.authenticator())
         passwordProtected.post("login") { req -> User in
@@ -97,6 +101,24 @@ func updateUserName(req: Request) async throws -> UserDTO {
     // Return updated DTO
     return user.toDTO()
 }
+
+func updateUserRole(req: Request) async throws -> UserDTO {
+    // Decode request body
+    let body = try req.content.decode(UserDTO.UpdateRoleRequest.self)
+    
+    // Find the user by ID
+    guard let user = try await User.find(body.id, on: req.db) else {
+        throw Abort(.notFound, reason: "User not found")
+    }
+    
+    // Update and persist
+    user.role = body.role
+    try await user.update(on: req.db)
+    
+    // Return updated DTO
+    return user.toDTO()
+}
+
 
 
 /// Deletes an user object
