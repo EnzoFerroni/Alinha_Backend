@@ -38,6 +38,9 @@ final class Appointment: Model, @unchecked Sendable {
     /// Indicates if the appointment is done.
     @Field(key: "isDone")
     var isDone: Bool
+    
+    @Field(key: "studentName")
+    var studentName: String
     /// The date and time when the appointment was created.
     @Timestamp(key: "createdAt", on: .create)
     var createdAt: Date?
@@ -64,7 +67,7 @@ final class Appointment: Model, @unchecked Sendable {
     ///    - isDone: Whether the appointment is done.
     ///    - createdAt: The creation date of the appointment.
     
-    init(id: UUID? = nil, mentor: String,description: String, appointmentPlace: String,student: User,  isScheduled: Bool, callStudent: Bool, isDone: Bool, createdAt: Date? = nil, type: TypeAppointment, path: PathAppointment) {
+    init(id: UUID? = nil, mentor: String,description: String, appointmentPlace: String,student: User,  isScheduled: Bool, callStudent: Bool, isDone: Bool,studentName: String, createdAt: Date? = nil, type: TypeAppointment, path: PathAppointment) {
         self.id = id
         self.mentor = mentor
         self.student = student
@@ -73,6 +76,7 @@ final class Appointment: Model, @unchecked Sendable {
         self.isScheduled = isScheduled
         self.callStudent = callStudent
         self.isDone = isDone
+        self.studentName = studentName
         self.createdAt = createdAt
         self.type = type
         self.path = path
@@ -90,6 +94,7 @@ final class Appointment: Model, @unchecked Sendable {
             isScheduled: self.$isScheduled.value,
             callStudent: self.$callStudent.value,
             isDone: self.$isDone.value,
+            studentName: self.$studentName.value,
             createdAt: self.$createdAt.value ?? Date.now,
             type: self.$type.value,
             path: self.$path.value

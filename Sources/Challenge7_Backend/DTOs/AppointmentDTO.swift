@@ -26,6 +26,8 @@ struct AppointmentDTO: Content {
     var callStudent: Bool?
     /// Indicates if the appointment is done.
     var isDone: Bool?
+    ///Student name associated with the appointment.
+    var studentName: String?
     /// Date and time when the appointment was created.
     var createdAt: Date?
     ///Appointment type

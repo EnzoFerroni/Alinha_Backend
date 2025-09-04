@@ -110,6 +110,7 @@ struct AppointmentController: RouteCollection {
         model.isScheduled = false   // start waiting in queue
         model.callStudent = false
         model.isDone = false
+        model.studentName = user.name
         model.type = typeEnum
         model.path = pathEnum
         // createdAt is handled automatically by @Timestamp(on: .create)
