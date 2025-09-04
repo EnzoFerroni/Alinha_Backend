@@ -19,10 +19,11 @@ struct UserController: RouteCollection{
         users.get(use: index)
         users.post(use: create)
         users.patch("updateName", use: updateUserName)
+        users.patch("updateUserAvaliable", use: updateUserAvaliable)
         let authenticatedId = users.grouped(User.authenticator())
         let secured = authenticatedId.grouped(AdminOnlyMiddleware())
         secured.patch("updateRole", use: updateUserRole)
-        secured.patch("updateUserAvaliable", use: updateUserAvaliable)
+       
         users.group(":id"){ user in
             let authenticatedId = user.grouped(User.authenticator())
             let secured = authenticatedId.grouped(AdminOnlyMiddleware())
