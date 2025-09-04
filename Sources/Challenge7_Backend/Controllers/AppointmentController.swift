@@ -176,10 +176,7 @@ struct AppointmentController: RouteCollection {
 
         // If the mentor toggled callStudent to true, send a push
         if create.callStudent {
-            guard let topic = Environment.get("APNS_TOPIC") else {
-                req.logger.critical("Missing env var APNS_TOPIC (Bundle Identifier)")
-                throw Abort(.internalServerError)
-            }
+            let topic = ".com.renataLeal.Front"
 
             let alert = APNSAlertNotification(
                 alert: .init(
