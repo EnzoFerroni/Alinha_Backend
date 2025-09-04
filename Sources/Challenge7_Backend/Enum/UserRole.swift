@@ -6,7 +6,6 @@
 //
 
 import Foundation
-
 ///Enumerates different types (permissions) of users
 enum UserRole: String, Codable {
     case adm

@@ -8,6 +8,10 @@
 import Fluent
 import Vapor
 import Foundation
+import APNSCore
+
+/// Minimal payload for APNs alert notifications
+private struct EmptyPayload: Codable {}
 
 /// Controller for managing Appointment resources and their API endpoints.
 struct AppointmentController: RouteCollection {
@@ -87,6 +91,10 @@ struct AppointmentController: RouteCollection {
             throw Abort(.badRequest, reason: "appointment desc is required")
         }
         
+        guard let deviceToken = input.deviceToken, !deviceToken.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
+            throw Abort(.badRequest, reason: "device desc is required")
+        }
+        
         guard let typeEnum = input.type else {
             throw Abort(.badRequest, reason: "invalid or missing type")
         }
@@ -110,7 +118,11 @@ struct AppointmentController: RouteCollection {
         model.isScheduled = false   // start waiting in queue
         model.callStudent = false
         model.isDone = false
+
         model.studentName = user.name
+
+        model.deviceToken = deviceToken
+
         model.type = typeEnum
         model.path = pathEnum
         // createdAt is handled automatically by @Timestamp(on: .create)
@@ -161,21 +173,57 @@ struct AppointmentController: RouteCollection {
             throw Abort(.notFound)
         }
         appointment.callStudent = create.callStudent
-        try await appointment.update(on: req.db)
 
+        // If the mentor toggled callStudent to true, send a push
+        if create.callStudent {
+            guard let topic = Environment.get("APNS_TOPIC") else {
+                req.logger.critical("Missing env var APNS_TOPIC (Bundle Identifier)")
+                throw Abort(.internalServerError)
+            }
+
+            let alert = APNSAlertNotification(
+                alert: .init(
+                    title: .raw("Você foi chamado!"),
+                    body: .raw("Vá para: \(appointment.appointmentPlace)")
+                ),
+                expiration: .immediately,
+                priority: .immediately,
+                topic: topic,
+                payload: EmptyPayload()
+            )
+
+            let token = appointment.deviceToken
+                .replacingOccurrences(of: " ", with: "")
+                .replacingOccurrences(of: "<", with: "")
+                .replacingOccurrences(of: ">", with: "")
+
+            do {
+                try await req.apns.client.sendAlertNotification(
+                    alert,
+                    deviceToken: token
+                )
+            } catch {
+                req.logger.report(error: error)
+                throw Abort(.failedDependency, reason: "Failed to send APNs notification: \(error.localizedDescription)")
+            }
+        }
+        
+        try await appointment.update(on: req.db)
         return appointment.toDTO()
     }
     
     /// Updates the done status of an appointment.
     /// - Returns: The updated appointment DTO.
     func updateIsDone(req: Request) async throws -> AppointmentDTO {
+        
         let create = try req.content.decode(AppointmentDTO.UpdateDone.self)
         guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
+
         appointment.isDone = create.isDone
         try await appointment.update(on: req.db)
-       
+        
         return appointment.toDTO()
     }
     

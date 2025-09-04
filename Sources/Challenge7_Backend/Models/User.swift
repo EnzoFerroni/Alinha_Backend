@@ -8,15 +8,13 @@
 import Foundation
 import Vapor
 import Fluent
-
-
 //MARK: - User Model
 
 final class User: Model, @unchecked Sendable, Content{
-    
+    /// The schema name for the user table.
     static let schema = "TB_users"
     
-    /// Unique identifier for this user.
+    /// Unique identifier for the user.
     @ID(key: .id)
     var id: UUID?
     
@@ -35,7 +33,6 @@ final class User: Model, @unchecked Sendable, Content{
     
     @Children(for: \Appointment.$student)
     var appointments: [Appointment]
-
     
     ///Class constructor
     init() {}
