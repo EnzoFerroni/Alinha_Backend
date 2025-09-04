@@ -19,9 +19,11 @@ struct UserController: RouteCollection{
         users.get(use: index)
         users.post(use: create)
         users.patch("updateName", use: updateUserName)
+        users.patch("updateUserAvaliable", use: updateUserAvaliable)
         let authenticatedId = users.grouped(User.authenticator())
         let secured = authenticatedId.grouped(AdminOnlyMiddleware())
         secured.patch("updateRole", use: updateUserRole)
+       
         users.group(":id"){ user in
             let authenticatedId = user.grouped(User.authenticator())
             let secured = authenticatedId.grouped(AdminOnlyMiddleware())
@@ -59,6 +61,7 @@ struct UserController: RouteCollection{
         let user = try User(
             name: create.name,
             email: create.email,
+            avaliable: false,
             password: Bcrypt.hash(create.password),
             role: create.role
         )
@@ -96,6 +99,23 @@ func updateUserName(req: Request) async throws -> UserDTO {
     
     // Update and persist
     user.name = body.name
+    try await user.update(on: req.db)
+    
+    // Return updated DTO
+    return user.toDTO()
+}
+
+func updateUserAvaliable(req: Request) async throws -> UserDTO {
+    // Decode request body
+    let body = try req.content.decode(UserDTO.UpdateAvaliableRequest.self)
+    
+    // Find the user by ID
+    guard let user = try await User.find(body.id, on: req.db) else {
+        throw Abort(.notFound, reason: "User not found")
+    }
+    
+    // Update and persist
+    user.avaliable = body.avaliable
     try await user.update(on: req.db)
     
     // Return updated DTO
