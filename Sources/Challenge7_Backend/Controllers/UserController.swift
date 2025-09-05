@@ -61,7 +61,7 @@ struct UserController: RouteCollection{
         let user = try User(
             name: create.name,
             email: create.email,
-            avaliable: false,
+            available: false,
             password: Bcrypt.hash(create.password),
             role: create.role
         )
@@ -115,7 +115,7 @@ func updateUserAvaliable(req: Request) async throws -> UserDTO {
     }
     
     // Update and persist
-    user.avaliable = body.avaliable
+    user.available = body.avaliable
     try await user.update(on: req.db)
     
     // Return updated DTO
