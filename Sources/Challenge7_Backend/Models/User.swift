@@ -53,7 +53,7 @@ final class User: Model, @unchecked Sendable, Content{
               name: self.$name.value,
               email: self.$email.value,
               password: self.$password.value,
-              avaliable: self.avaliable,
+              avaliable: self.$avaliable.value,
               role: self.$role.value)
     }
     
