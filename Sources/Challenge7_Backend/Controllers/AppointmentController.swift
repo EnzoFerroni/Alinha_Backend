@@ -160,8 +160,7 @@ struct AppointmentController: RouteCollection {
     /// Updates the callStudent status of an appointment.
     /// - Returns: The updated appointment DTO.
     func updateCallStudent(req: Request) async throws -> AppointmentDTO {
-        // Pega o usuário autenticado (quem chamou a rota)
-        let currentUser = try req.auth.require(User.self)
+         let currentUser = try req.auth.require(User.self)
 
         let create = try req.content.decode(AppointmentDTO.UpdateCallStudent.self)
         guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
@@ -180,7 +179,7 @@ struct AppointmentController: RouteCollection {
             let alert = APNSAlertNotification(
                 alert: .init(
                     title: .raw("Você foi chamado!"),
-                    body: .raw("Vá para: \(appointment.appointmentPlace)")
+                    body: .raw("\(appointment.mentor) está aguardando em: \(appointment.appointmentPlace)")
                 ),
                 expiration: .immediately,
                 priority: .immediately,
