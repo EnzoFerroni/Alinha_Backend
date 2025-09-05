@@ -91,6 +91,7 @@ struct AppointmentController: RouteCollection {
             throw Abort(.badRequest, reason: "appointment desc is required")
         }
         
+        print(input.deviceToken ?? "TOKEN NAO CHEGOU")
         guard let deviceToken = input.deviceToken, !deviceToken.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
             throw Abort(.badRequest, reason: "device desc is required")
         }
@@ -176,7 +177,7 @@ struct AppointmentController: RouteCollection {
 
         // If the mentor toggled callStudent to true, send a push
         if create.callStudent {
-            let topic = ".com.renataLeal.Front"
+            let topic = "JonasMelo.Front"
 
             let alert = APNSAlertNotification(
                 alert: .init(
