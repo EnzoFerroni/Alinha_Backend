@@ -32,14 +32,14 @@ public func configure(_ app: Application) async throws {
     // APNs credentials
     let apnsPrivateKey = """
     -----BEGIN PRIVATE KEY-----
-    MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgDAiYwWQ5MYgYq5Wt
-    rXP+d+Zj6fZjze2q2fJwFuL9kFigCgYIKoZIzj0DAQehRANCAAQKNFVi9Nc9PH6O
-    N3ZHIER9nnxKqXVUoda8NN+j/d8JeDBIGor/dXXGoteKD1zgVYfijnX3Qs9IkwQ6
-    NaSX0NIy
+    MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgOy6Nxulxh8PW9nkh
+    U6mNzMaAlznNBQQIviL504c2tLagCgYIKoZIzj0DAQehRANCAASUYc7ETNV1C+Yq
+    z26kU7JmcqwCWPy9tqW7u0fAH2hRDvhlhebuvDiUCkUmmSbrrLooaN5vx3Op8PcP
+    5pyGv53D
     -----END PRIVATE KEY-----
     """
-    let apnsKeyId = "2R398ASNX6"      // 10-char Key ID
-    let apnsTeamId = "2B49H9LV4C"     // 10-char Team ID
+    let apnsKeyId = "6Z8D8QU468"      // 10-char Key ID
+    let apnsTeamId = "32M6C7GWMQ"     // 10-char Team ID
     let apnsEnvironment: APNSEnvironment = .development
 
     // Configure APNS using JWT authentication.
