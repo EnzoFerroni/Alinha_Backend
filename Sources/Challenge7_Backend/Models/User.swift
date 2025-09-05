@@ -25,6 +25,9 @@ final class User: Model, @unchecked Sendable, Content{
     @Field(key: "email")
     var email: String
     
+    @Field(key: "avaliable")
+    var avaliable: Bool
+    
     @Field(key: "password")
     var password: String
     
@@ -36,10 +39,11 @@ final class User: Model, @unchecked Sendable, Content{
     
     ///Class constructor
     init() {}
-    init(id: UUID? = nil, name: String, email: String, password: String, role: UserRole) {
+    init(id: UUID? = nil, name: String, email: String,avaliable: Bool, password: String, role: UserRole) {
         self.id = id
         self.name = name
         self.email = email
+        self.avaliable = avaliable
         self.password = password
         self.role = role
     }
@@ -51,6 +55,7 @@ final class User: Model, @unchecked Sendable, Content{
               name: self.$name.value,
               email: self.$email.value,
               password: self.$password.value,
+              avaliable: self.avaliable,
               role: self.$role.value)
     }
     

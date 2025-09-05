@@ -15,6 +15,7 @@ struct UserDTO: Authenticatable, Content {
     var name: String?
     var email: String?
     var password: String?
+    var avaliable: Bool?
     var role: UserRole?
 }
 
@@ -25,6 +26,7 @@ extension UserDTO {
         var email: String
         var password: String
         var confirmedPassword: String
+        var avaliable: Bool
         var role: UserRole
     }
     ///Body of patch updateName requisition
@@ -37,6 +39,11 @@ extension UserDTO {
     struct UpdateRoleRequest: Content, Decodable {
         var id: UUID
         var role: UserRole
+    }
+    
+    struct UpdateAvaliableRequest: Content, Decodable {
+        var id: UUID
+        var avaliable: Bool
     }
     
 
