@@ -53,6 +53,7 @@ extension AppointmentDTO {
     struct UpdateCallStudent : Content {
         var appointmentId: UUID
         var callStudent: Bool
+        var appointmentPlace: String
     }
     /// DTO for updating the done status of an appointment.
     struct UpdateDone : Content {

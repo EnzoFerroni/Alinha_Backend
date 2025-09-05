@@ -178,6 +178,7 @@ struct AppointmentController: RouteCollection {
             /*Updates Appointment atributes*/
             appointment.isScheduled = true
             appointment.mentor = currentUser.name
+            appointment.appointmentPlace = create.appointmentPlace
             
             //Sends the notification to the users device token
             let alert = APNSAlertNotification(
