@@ -28,7 +28,8 @@ struct UserMigration: AsyncMigration {
             .field("email", .string, .required)
             /// The encrypted password of the user.
             .field("password", .string, .required)
-            .field("avaliable", .bool, .required, .sql(.default(false)))
+            ///if the user is a mentor, can be available or not
+            .field("available", .bool, .required, .sql(.default(false)))
             /// The role of the user, such as student, mentor, or adm.
             .field("role", userRole, .required)
             /// Ensures no two users have the same email address.
