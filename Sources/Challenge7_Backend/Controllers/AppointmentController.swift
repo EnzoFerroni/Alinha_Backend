@@ -86,11 +86,6 @@ struct AppointmentController: RouteCollection {
             throw Abort(.badRequest, reason: "appointment desc is required")
         }
         
-        print(input.deviceToken ?? "TOKEN NAO CHEGOU")
-        guard let deviceToken = input.deviceToken, !deviceToken.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
-            throw Abort(.badRequest, reason: "device desc is required")
-        }
-        
         guard let typeEnum = input.type else {
             throw Abort(.badRequest, reason: "invalid or missing type")
         }
@@ -115,7 +110,7 @@ struct AppointmentController: RouteCollection {
         model.callStudent = false
         model.isDone = false
         model.studentName = user.name
-        model.deviceToken = deviceToken
+        model.deviceToken = input.deviceToken ?? "80084afb75be94dcb874d28df47e4662c9d5bfb3d176c84b71dc53195a2d9f57"
         model.type = typeEnum
         model.path = pathEnum
         // createdAt is handled automatically by @Timestamp(on: .create)
