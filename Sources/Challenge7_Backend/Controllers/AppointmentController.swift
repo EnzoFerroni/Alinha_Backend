@@ -170,6 +170,7 @@ struct AppointmentController: RouteCollection {
         
         //Updates Call Student boolean
         appointment.callStudent = create.callStudent
+        appointment.appointmentPlace = create.appointmentPlace
         
         if create.callStudent {
             //App identifier
@@ -178,7 +179,7 @@ struct AppointmentController: RouteCollection {
             /*Updates Appointment atributes*/
             appointment.isScheduled = true
             appointment.mentor = currentUser.name
-            
+           
             //Sends the notification to the users device token
             let alert = APNSAlertNotification(
                 alert: .init(
