@@ -19,7 +19,7 @@ struct UserController: RouteCollection{
         users.get(use: index)
         users.post(use: create)
         users.patch("updateName", use: updateUserName)
-        users.patch("updateUserAvaliable", use: updateUserAvaliable)
+        users.patch("updateUserAvailable", use: updateUserAvailable)
         let authenticatedId = users.grouped(User.authenticator())
         let secured = authenticatedId.grouped(AdminOnlyMiddleware())
         secured.patch("updateRole", use: updateUserRole)
@@ -105,9 +105,9 @@ func updateUserName(req: Request) async throws -> UserDTO {
     return user.toDTO()
 }
 
-func updateUserAvaliable(req: Request) async throws -> UserDTO {
+func updateUserAvailable(req: Request) async throws -> UserDTO {
     // Decode request body
-    let body = try req.content.decode(UserDTO.UpdateAvaliableRequest.self)
+    let body = try req.content.decode(UserDTO.UpdateAvailableRequest.self)
     
     // Find the user by ID
     guard let user = try await User.find(body.id, on: req.db) else {
@@ -115,7 +115,7 @@ func updateUserAvaliable(req: Request) async throws -> UserDTO {
     }
     
     // Update and persist
-    user.available = body.avaliable
+    user.available = body.available
     try await user.update(on: req.db)
     
     // Return updated DTO

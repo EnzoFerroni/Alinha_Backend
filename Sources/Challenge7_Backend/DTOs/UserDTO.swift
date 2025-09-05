@@ -41,9 +41,9 @@ extension UserDTO {
     }
     
     /// A request body used to update the availability status of a user.
-    struct UpdateAvaliableRequest: Content, Decodable {
+    struct UpdateAvailableRequest: Content, Decodable {
         var id: UUID
-        var avaliable: Bool
+        var available: Bool
     }
     
     /// A request body used to log in a user with email and password.
