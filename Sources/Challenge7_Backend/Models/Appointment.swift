@@ -38,15 +38,12 @@ final class Appointment: Model, @unchecked Sendable {
     /// Indicates if the appointment is done.
     @Field(key: "isDone")
     var isDone: Bool
-
-    
+    ///Students name of the appointmnet
     @Field(key: "studentName")
     var studentName: String
-
     /// Indicates if the device that will receive notifications.
     @Field(key: "deviceToken")
     var deviceToken: String
-
     /// The date and time when the appointment was created.
     @Timestamp(key: "createdAt", on: .create)
     var createdAt: Date?
@@ -72,7 +69,6 @@ final class Appointment: Model, @unchecked Sendable {
     ///    - callStudent: Whether to call the student.
     ///    - isDone: Whether the appointment is done.
     ///    - createdAt: The creation date of the appointment.
-
     init(id: UUID? = nil, mentor: String,description: String, appointmentPlace: String,student: User,  isScheduled: Bool, callStudent: Bool, isDone: Bool, deviceToken: String, studentName: String, createdAt: Date? = nil, type: TypeAppointment, path: PathAppointment) {
 
         self.id = id
