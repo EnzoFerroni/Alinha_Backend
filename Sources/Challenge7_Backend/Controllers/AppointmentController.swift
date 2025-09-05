@@ -47,7 +47,7 @@ struct AppointmentController: RouteCollection {
     /// - per:  Int (items per page, optional, default 20, max 100)
     func index(req: Request) async throws -> [AppointmentDTO] {
         var qb = Appointment.query(on: req.db)
-
+        
         // Filtering by queue status
         if let status = req.query[String.self, at: "status"]?.lowercased() {
             switch status {
@@ -61,10 +61,10 @@ struct AppointmentController: RouteCollection {
                 break
             }
         }
-
+        
         // Order by createdAt ascending (queue order)
         qb = qb.sort(\.$createdAt, .ascending)
-
+        
         // Simple pagination using range
         let page = max(1, req.query[Int.self, at: "page"] ?? 1)
         let perRaw = req.query[Int.self, at: "per"] ?? 20
@@ -81,7 +81,7 @@ struct AppointmentController: RouteCollection {
     func create(req: Request) async throws -> AppointmentDTO {
         // Decode a broad DTO but DO NOT trust client flags or createdAt
         let input = try req.content.decode(AppointmentDTO.self)
-
+        
         guard let description = input.description, !description.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty else {
             throw Abort(.badRequest, reason: "appointment desc is required")
         }
@@ -154,33 +154,32 @@ struct AppointmentController: RouteCollection {
         }
         appointment.isScheduled = create.isScheduled
         try await appointment.update(on: req.db)
-    
+        
         return appointment.toDTO()
     }
     
-    /// Updates the callStudent status of an appointment.
-    /// - Returns: The updated appointment DTO.
+    /// Updates the appointment call student, assigning it to the mentor and sending a notification to the student.
     func updateCallStudent(req: Request) async throws -> AppointmentDTO {
-         let currentUser = try req.auth.require(User.self)
-
+        //Mentor or ADM
+        let currentUser = try req.auth.require(User.self)
+        
         let create = try req.content.decode(AppointmentDTO.UpdateCallStudent.self)
         guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
-
-
+        
+        //Updates Call Student boolean
         appointment.callStudent = create.callStudent
-
+        
         if create.callStudent {
-
+            //App identifier
             let topic = "JonasMelo.Front"
-
+            
+            /*Updates Appointment atributes*/
             appointment.isScheduled = true
             appointment.mentor = currentUser.name
-
-
             
-            
+            //Sends the notification to the users device token
             let alert = APNSAlertNotification(
                 alert: .init(
                     title: .raw("Você foi chamado!"),
@@ -191,12 +190,13 @@ struct AppointmentController: RouteCollection {
                 topic: topic,
                 payload: EmptyPayload()
             )
-
+            
+            //Clears the token in case of invalid characters
             let token = appointment.deviceToken
                 .replacingOccurrences(of: " ", with: "")
                 .replacingOccurrences(of: "<", with: "")
                 .replacingOccurrences(of: ">", with: "")
-
+            
             do {
                 try await req.apns.client.sendAlertNotification(alert, deviceToken: token)
             } catch {
@@ -205,7 +205,7 @@ struct AppointmentController: RouteCollection {
                             reason: "Failed to send APNs notification: \(error.localizedDescription)")
             }
         }
-
+        //Saves the context
         try await appointment.update(on: req.db)
         return appointment.toDTO()
     }
@@ -218,7 +218,7 @@ struct AppointmentController: RouteCollection {
         guard let appointment = try await Appointment.find(create.appointmentId, on: req.db) else {
             throw Abort(.notFound)
         }
-
+        
         appointment.isDone = create.isDone
         try await appointment.update(on: req.db)
         
@@ -234,7 +234,7 @@ struct AppointmentController: RouteCollection {
         }
         appointment.mentor = create.mentor
         try await appointment.update(on: req.db)
-       
+        
         return appointment.toDTO()
     }
     
