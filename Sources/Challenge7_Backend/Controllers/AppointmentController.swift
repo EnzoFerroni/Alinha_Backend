@@ -189,7 +189,8 @@ struct AppointmentController: RouteCollection {
                 expiration: .immediately,
                 priority: .immediately,
                 topic: topic,
-                payload: EmptyPayload()
+                payload: EmptyPayload(),
+                sound: .default
             )
             
             //Clears the token in case of invalid characters
