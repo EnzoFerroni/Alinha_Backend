@@ -35,18 +35,19 @@ extension UserDTO {
         var name: String
     }
 
-    
+    /// A request body used to update the role of a user.
     struct UpdateRoleRequest: Content, Decodable {
         var id: UUID
         var role: UserRole
     }
     
+    /// A request body used to update the availability status of a user.
     struct UpdateAvaliableRequest: Content, Decodable {
         var id: UUID
         var avaliable: Bool
     }
     
-
+    /// A request body used to log in a user with email and password.
     struct Login : Content {
         var email: String
         var password: String

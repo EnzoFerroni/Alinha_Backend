@@ -22,11 +22,16 @@ struct UserMigration: AsyncMigration {
         
         try await database.schema("TB_users")
             .id()
+            /// The full name of the user.
             .field("name", .string, .required)
+            /// The email address of the user, must be unique.
             .field("email", .string, .required)
+            /// The encrypted password of the user.
             .field("password", .string, .required)
             .field("avaliable", .bool, .required, .sql(.default(false)))
+            /// The role of the user, such as student, mentor, or adm.
             .field("role", userRole, .required)
+            /// Ensures no two users have the same email address.
             .unique(on: "email")
             .create()
     }

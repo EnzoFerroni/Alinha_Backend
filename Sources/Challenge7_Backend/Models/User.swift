@@ -13,11 +13,9 @@ import Fluent
 final class User: Model, @unchecked Sendable, Content{
     /// The schema name for the user table.
     static let schema = "TB_users"
-    
     /// Unique identifier for the user.
     @ID(key: .id)
     var id: UUID?
-    
     /*User Atributes*/
     @Field(key: "name")
     var name: String
