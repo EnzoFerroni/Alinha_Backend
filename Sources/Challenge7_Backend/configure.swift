@@ -28,37 +28,32 @@ public func configure(_ app: Application) async throws {
     
     let cors = CORSMiddleware(configuration: corsConfiguration)
 
-    //MARK: APNS credentials
-    //TODO: Turn into enviroment vars
-    let apnsPrivateKey = """
-    -----BEGIN PRIVATE KEY-----
-    MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgOy6Nxulxh8PW9nkh
-    U6mNzMaAlznNBQQIviL504c2tLagCgYIKoZIzj0DAQehRANCAASUYc7ETNV1C+Yq
-    z26kU7JmcqwCWPy9tqW7u0fAH2hRDvhlhebuvDiUCkUmmSbrrLooaN5vx3Op8PcP
-    5pyGv53D
-    -----END PRIVATE KEY-----
-    """
-    let apnsKeyId = "6Z8D8QU468"      // 10-char Key ID
-    let apnsTeamId = "32M6C7GWMQ"     // 10-char Team ID
-    let apnsEnvironment: APNSEnvironment = .development
+    //MARK: APNS credentials — loaded from environment variables (never hardcode secrets)
+    // Set APNS_PRIVATE_KEY (the .p8 contents), APNS_KEY_ID and APNS_TEAM_ID in the environment.
+    if let apnsPrivateKey = Environment.get("APNS_PRIVATE_KEY"),
+       let apnsKeyId = Environment.get("APNS_KEY_ID"),
+       let apnsTeamId = Environment.get("APNS_TEAM_ID") {
 
-    // Configure APNS using JWT authentication.
-    let apnsConfig = APNSClientConfiguration(
-        authenticationMethod: .jwt(
-            privateKey: try .loadFrom(string: apnsPrivateKey),
-            keyIdentifier: apnsKeyId,
-            teamIdentifier: apnsTeamId
-        ),
-        environment: apnsEnvironment
-    )
-    app.apns.containers.use(
-        apnsConfig,
-        eventLoopGroupProvider: .shared(app.eventLoopGroup),
-        responseDecoder: JSONDecoder(),
-        requestEncoder: JSONEncoder(),
-        as: .default
-    )
-    
+        // Configure APNS using JWT authentication.
+        let apnsConfig = APNSClientConfiguration(
+            authenticationMethod: .jwt(
+                privateKey: try .loadFrom(string: apnsPrivateKey),
+                keyIdentifier: apnsKeyId,
+                teamIdentifier: apnsTeamId
+            ),
+            environment: .development
+        )
+        app.apns.containers.use(
+            apnsConfig,
+            eventLoopGroupProvider: .shared(app.eventLoopGroup),
+            responseDecoder: JSONDecoder(),
+            requestEncoder: JSONEncoder(),
+            as: .default
+        )
+    } else {
+        app.logger.warning("APNS env vars not set (APNS_PRIVATE_KEY / APNS_KEY_ID / APNS_TEAM_ID) — APNS disabled.")
+    }
+
     app.middleware.use(cors, at: .beginning)
     app.migrations.add(UserMigration())
     app.migrations.add(CreateAppointment())
